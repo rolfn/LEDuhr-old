@@ -7,7 +7,7 @@
 
 MCU = atmega328p
 FORMAT = ihex
-TARGET = LED_uhr
+TARGET = LEDuhr
 SRC = $(TARGET).c dcf77/clock.c dcf77/dcf77.c dcf77/timebase.c
 ASRC =
 OPT = s
