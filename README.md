@@ -1,1 +1,1 @@
-* LED-Uhr
+* LED-Wecker (LED alarm clock)
