@@ -5,7 +5,7 @@
  *                      danni@specs.de
  *
  */
-
+///#include "iocompat.h"
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
@@ -13,6 +13,7 @@
 #include "timebase.h"
 #include "dcf77.h"
 #include "dcf77_config.h"
+#include "iocompat.h"
 
 // at 16MHz:
 #define T0COUNT     (F_CPU / 1024 / 64)	                         // 244
@@ -33,8 +34,8 @@ uint8_t ct_64Hz; // 64 Hz counter (4sec)
 void
 timebase_init(void)
 {
-  TCCR0B = (1 << CS02) | (1 << CS00); // prescale = 1024
-  TIMSK0 = 1 << TOIE0; // interrupt enable
+  TCCR0 = (1 << CS02) | (1 << CS00); // prescale = 1024
+  TIMSK = 1 << TOIE0; // interrupt enable
 }
 
 ISR(TIMER0_OVF_vect)
@@ -57,13 +58,15 @@ ISR(TIMER0_OVF_vect)
           {
             dcf77_period = dcf77_time; // store ticks of period
             dcf77_time = 0; // count next period
+            //printDEC(2, 1, dcf77_period);
           }
         else
           {
             dcf77_pulse = dcf77_time; // store ticks of pulse
+            //printDEC(3, 1, dcf77_pulse);
           }
       }
-
+    scan_dcf77();
     // time base 1 second
     TCNT0 = (uint16_t)(256 - T0COUNT); // reload per tick: -183
     if( ++ct_64Hz & 0x3F )
@@ -75,6 +78,7 @@ ISR(TIMER0_OVF_vect)
     if( timeflags & (1<< ONE_MINUTE ))
     TCNT0 = (uint16_t)(256 - T0COUNTMIN); // reload per minute: -234
     timeflags = 1<<ONE_SECOND^1<<ONE_TICK; // one tick, one second over
+
   }
 
 void

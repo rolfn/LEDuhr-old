@@ -1,96 +1,100 @@
-/*
- * ----------------------------------------------------------------------------
- * "THE BEER-WARE LICENSE" (Revision 42):
- * <joerg@FreeBSD.ORG> wrote this file.  As long as you retain this notice you
- * can do whatever you want with this stuff. If we meet some day, and you think
- * this stuff is worth it, you can buy me a beer in return.        Joerg Wunsch
- * ----------------------------------------------------------------------------
- *
- * Simple AVR demonstration.  Controls a LED that can be directly
- * connected from OC1/OC1A to GND.  The brightness of the LED is
- * controlled with the PWM.  After each period of the PWM, the PWM
- * value is either incremented or decremented, that's all.
- *
- * $Id: demo.c 1637 2008-03-17 21:49:41Z joerg_wunsch $
- */
-
-#include <inttypes.h>
-#include <avr/io.h>
+#include <stdlib.h>
+#include <util/delay.h>
 #include <avr/interrupt.h>
-#include <avr/sleep.h>
-#include <avr/pgmspace.h>
-
-#include "dcf77/clock.h"
-#include "dcf77/timebase.h"
+#include <avr/io.h>
 #include "dcf77/dcf77.h"
+#include "i2clcd.h"
+#include "i2cmaster.h"
+#include "i2cled.h"
 
-#include "iocompat.h"		/* Note [1] */
+#include "RN-utils.h"
 
-enum { UP, DOWN };
+#define LED_DISP_1 (0x70 << 1) //   I2C bus address for Ht16K33 backpack
+#define LED_DISP_2 (0x71 << 1) //   I2C bus address for Ht16K33 backpack
 
-ISR (TIMER1_OVF_vect)		/* Note [2] */
-{
-    static uint16_t pwm;	/* Note [3] */
-    static uint8_t direction;
+#define DEBUG
+#define SHOW_SECONDS
 
-    switch (direction)		/* Note [4] */
-    {
-        case UP:
-            if (++pwm == TIMER1_TOP)
-                direction = DOWN;
-            break;
-
-        case DOWN:
-            if (--pwm == 0)
-                direction = UP;
-            break;
-    }
-
-    OCR = pwm;			/* Note [5] */
+char *getDigits(uint8_t nb) {
+  static char buf[] = "  \x0";
+  buf[1] = (nb % 10) + '0';
+  buf[0] = (nb / 10) + '0';
+  return buf;
 }
 
-void
-ioinit (void)			/* Note [6] */
-{
-    /* Timer 1 is 10-bit PWM (8-bit PWM on some ATtinys). */
-    TCCR1A = TIMER1_PWM_INIT;
-    /*
-     * Start timer 1.
-     *
-     * NB: TCCR1A and TCCR1B could actually be the same register, so
-     * take care to not clobber it.
-     */
-    TCCR1B |= TIMER1_CLOCKSOURCE;
-    /*
-     * Run any device-dependent timer 1 setup hook if present.
-     */
-#if defined(TIMER1_SETUP_HOOK)
-    TIMER1_SETUP_HOOK();
+int main(void) {
+
+  i2c_init();
+  lcd_init();
+  SS_Init(LED_DISP_1);                  //   initialize HT16K33 LED controller
+  SS_Init(LED_DISP_2);                  //   initialize HT16K33 LED controller
+  SS_SetBrightness(LED_DISP_1, 4);
+  SS_SetBrightness(LED_DISP_2, 0);
+#ifdef SHOW_SECONDS
+  SS_BlankDigit(LED_DISP_2, 0);
+  SS_BlankDigit(LED_DISP_2, 1);
 #endif
+  SS_SetColon(LED_DISP_1, 1);
+  SS_SetColon(LED_DISP_2, 0);
 
-    /* Set PWM value to 0. */
-    OCR = 0;
+  timebase_init();
 
-    /* Enable OC1 as output. */
-    DDROC = _BV (OC1);
+  // always set all three parameters  (ON/OFF) when using this command
+  lcd_command(LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKINGOFF);
+  lcd_light(true);
+  lcd_printlc(1, 1, "DCF77");
 
-    /* Enable timer 1 overflow interrupt. */
-    TIMSK = _BV (TOIE1);
-    sei ();
-}
+  sei();
 
-int
-main (void)
-{
+  PORTD = 0xFF;		// enable pull ups
+  DDRD |= 1<<PD3;
 
-    ioinit ();
+  timebase_init();
+  sei();
 
-    scan_dcf77();
+  for(;;){
 
-    /* loop forever, the interrupts are doing the rest */
+    if( DCF77_PIN & 1<<DCF77 ) PORTD |= 1<< PD3;
+    else PORTD &= ~(1<<PD3);
 
-    for (;;)			/* Note [7] */
-        sleep_mode();
+    if( timeflags & 1<<ONE_SECOND ) {
+      timeflags = 0;
+      clock();
 
-    return (0);
+      printHEX(4, 19, dcf77error);
+#ifdef DEBUG
+      lcd_printlc(4, 1, getDigits(time.hour));
+      lcd_printlc(4, 3, ":");
+      lcd_printlc(4, 4, getDigits(time.minute));
+      lcd_printlc(4, 6, ":");
+      lcd_printlc(4, 7, getDigits(time.second));
+
+      lcd_printlc(4, 10, getDigits(time.day));
+      lcd_printlc(4, 12, ".");
+      lcd_printlc(4, 13, getDigits(time.month));
+      lcd_printlc(4, 15, ".");
+      lcd_printlc(4, 16, getDigits(time.year));
+#endif
+      // first LED display: time
+      SS_SetDigit(LED_DISP_1, 0, time.hour / 10);
+      SS_SetDigit(LED_DISP_1, 1, time.hour % 10);
+      SS_SetDigit(LED_DISP_1, 2, time.minute / 10);
+      SS_SetDigit(LED_DISP_1, 3, time.minute % 10);
+      // second LED display: date or seconds
+#ifdef SHOW_SECONDS
+      SS_SetDigit(LED_DISP_2, 2, time.second / 10);
+      SS_SetDigit(LED_DISP_2, 3, time.second % 10);
+#else
+      SS_SetDigit(LED_DISP_2, 0, time.day / 10);
+      SS_SetDigit(LED_DISP_2, 1, time.day % 10 | SET_DP);
+      SS_SetDigit(LED_DISP_2, 2, time.month / 10);
+      SS_SetDigit(LED_DISP_2, 3, time.month % 10);
+#endif
+      if ( synchronize == 0xFF ) {
+
+        //
+
+      }
+    }
+  }
 }
