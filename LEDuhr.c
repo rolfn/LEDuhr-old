@@ -4,7 +4,7 @@
 #include <avr/io.h>
 #include "dcf77/dcf77.h"
 #include "i2clcd.h"
-#include "i2cmaster.h"
+#include "i2c/i2cmaster.h"
 #include "i2cled.h"
 
 #include "RN-utils.h"
@@ -25,7 +25,6 @@ char *getDigits(uint8_t nb) {
 int main(void) {
 
   i2c_init();
-  lcd_init();
   SS_Init(LED_DISP_1);                  //   initialize HT16K33 LED controller
   SS_Init(LED_DISP_2);                  //   initialize HT16K33 LED controller
   SS_SetBrightness(LED_DISP_1, 4);
@@ -39,10 +38,13 @@ int main(void) {
 
   timebase_init();
 
+#ifdef DEBUG
+  lcd_init();
   // always set all three parameters  (ON/OFF) when using this command
   lcd_command(LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKINGOFF);
   lcd_light(true);
   lcd_printlc(1, 1, "DCF77");
+#endif
 
   sei();
 

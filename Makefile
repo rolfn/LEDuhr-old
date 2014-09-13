@@ -57,8 +57,8 @@ TARGET = LEDuhr
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC = $(TARGET).c
-SRC += dcf77/clock.c dcf77/dcf77.c dcf77/timebase.c twimaster.c i2clcd.c
-SRC += i2cled.c RN-utils.c
+SRC += dcf77/clock.c dcf77/dcf77.c dcf77/timebase.c i2c/twimaster.c
+SRC += i2clcd/i2clcd.c i2cled/i2cled.c RN-utils.c
 
 # List Assembler source files here.
 #     Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -107,7 +107,7 @@ CDEFS = -DF_CPU=$(F_CPU)UL
 
 
 # Place -I options here
-CINCS = -I$(HOME)/include/avr
+CINCS = -I$(HOME)/include/avr -Ii2c -Ii2clcd  -Ii2cled
 
 
 
