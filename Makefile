@@ -47,10 +47,8 @@ MCU = atmega8
 #     automatically to create a 32-bit value in your source code.
 F_CPU = 8000000
 
-
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
-
 
 # Target file name (without extension).
 TARGET = LEDuhr
@@ -59,6 +57,15 @@ TARGET = LEDuhr
 SRC = $(TARGET).c
 SRC += dcf77/clock.c dcf77/dcf77.c dcf77/timebase.c i2c/twimaster.c
 SRC += i2clcd/i2clcd.c i2cled/i2cled.c RN-utils.c
+
+# Hardware related defines
+# DCF77
+CDEFS = -DDCF77_PIN=PIND -DDCF77_PORT=PORTD -DDCF77_DDR=DDRD -DDCF77=PD7
+CDEFS += -DDCF77_INVERTED # ELV module
+# I2C adresses
+CDEFS += -D"LCD_I2C_DEVICE=(0x3F << 1)"
+CDEFS += -D"LED_DISP_1=(0x70 << 1)"
+CDEFS += -D"LED_DISP_2=(0x71 << 1)"
 
 # List Assembler source files here.
 #     Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -97,9 +104,7 @@ EXTRAINCDIRS =
 #     gnu99 = c99 plus GCC extensions
 CSTANDARD = -std=gnu99
 
-
-# Place -D or -U options here
-CDEFS = -DF_CPU=$(F_CPU)UL
+CDEFS += -DF_CPU=$(F_CPU)UL
 
 # uncomment and adapt these line if you want different UART library buffer size
 #CDEFS += -DUART_RX_BUFFER_SIZE=128
