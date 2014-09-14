@@ -28,7 +28,7 @@
 - 7-Segment-LED-Display 1.2" mit I2C-Interface ([Adafruit](http://www.adafruit.com/product/1269), auf Basis von HT16K33) zur Anzeige der Uhrzeit
 - 7-Segment-LED-Display 0.56" mit I2C-Interface ([Adafruit](http://www.adafruit.com/product/879), auf Basis von HT16K33) zur Anzeige des Datums oder der Sekunden
 - Alphanumerisches LCD-Display mit I2C-Interface (4x20, auf Basis von PCF8574, z.B. [hier](http://www.amazon.de/gp/product/B007XRHBKA) zu finden); nur zum Debugging
-- Arduino Pro Mini 328 - 5V/16MHz ([SparkFun](https://www.sparkfun.com/products/11113))
+- Controler-Platine ([Arduino Pro Mini 328 - 5V/16MHz](https://www.sparkfun.com/products/11113))
 - DCF-Empfangsmodul ([ELV](http://www.elv.de/output/controller.aspx?cid=74&detail=10&detail2=28116))
 - Zusätzliche längere Ferrit-Antenne ([Arduino Projects4u](http://www.arduino-projects4u.com/product/100mm-lenth-ferrite-rod-antenna-775/))
 - Zweitast-Codierschalter ([PICO-D 131](http://www.hartmann-codier.de/familie_19.html?id=222))
