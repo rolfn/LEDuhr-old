@@ -3,13 +3,12 @@
 #include <string.h>
 #include "i2cled.h"
 
-/* see: http://w8bh.net/avr/AvrSSD1.pdf */
-
-//         ---------------------------------------------------------------------------
-//         I2C (TWI) ROUTINES
-//
-//   On the AVRmega series, PA4 is the data line (SDA) and PA5 is the clock (SCL
-//   The standard clock rate is 100 KHz, and set by i2c_init. It depends on the AVR osc. freq.
+/*
+    For Adafruit 7-segment 1.2"/0.56" LED displays (HT16K33);
+    see: https://learn.adafruit.com/adafruit-led-backpack/
+    Code based on http://w8bh.net/avr/AvrSSD1.pdf
+    Rolf Niepraschk, Rolf.Niepraschk@gmx.de,
+*/
 
 void I2C_WriteByte(uint8_t busAddr, uint8_t data) {
     i2c_start_wait(busAddr+I2C_WRITE);

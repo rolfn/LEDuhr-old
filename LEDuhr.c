@@ -9,8 +9,10 @@
 
 #include "RN-utils.h"
 
-#define LED_DISP_1 (0x70 << 1) //   I2C bus address for Ht16K33 backpack
-#define LED_DISP_2 (0x71 << 1) //   I2C bus address for Ht16K33 backpack
+// i2c adresses
+#define LCD_I2C_DEVICE (0x3F << 1)
+#define LED_DISP_1     (0x70 << 1)
+#define LED_DISP_2     (0x71 << 1)
 
 #define DEBUG
 #define SHOW_SECONDS
