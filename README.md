@@ -13,13 +13,13 @@
 |                         | *     *  *     *   *     *  *     * |  |
 |                         | *******  *******   *******  ******* |  |
 |                         +-------------------------------------+  |
-|                                     +-------------------------+  |
-|                                     | ****  ****   ****  **** |  |
-|                    Indikator **     | *  *  *  *   *  *  *  * |  |
-|                              **     | ****  ****   ****  **** |  |
-|                                     | *  *  *  *   *  *  *  * |  |
-|                    Datum / Sekunden | ****  **** * ****  **** |  |
-|                                     +-------------------------+  |
+|                                 +-----------------------------+  |
+|                                 | *****  *****   *****  ***** |  |
+|                   Indikator **  | *   *  *   *   *   *  *   * |  |
+|                             **  | *****  *****   *****  ***** |  |
+|                                 | *   *  *   *   *   *  *   * |  |
+|                Datum / Sekunden | *****  ***** * *****  ***** |  |
+|                                 +-----------------------------+  |
 +------------------------------------------------------------------+
 ```
 
@@ -38,9 +38,10 @@
 
 - DCF77-C-Bibliothek ([»DCF77 Uhr in C mit ATtiny26«](http://www.mikrocontroller.net/topic/58769))
 - I2C-C-Bibliothek ([»I2C Master Interface«](http://homepage.hispeed.ch/peterfleury/avr-software.html))
-- I2C/LCD-C-Bibliothek ([»I2CLCD Library für HD44780 LCDs«](http://www.mikrocontroller.net/topic/334653))
-- I2C/LED-C-Routinen ([»Add a Seven-Segment LED Display to your AVR microcontroller«](http://w8bh.net/avr/AvrSSD1.pdf))
+- I2C-LCD-C-Bibliothek ([»I2CLCD Library für HD44780 LCDs«](http://www.mikrocontroller.net/topic/334653))
+- I2C-LED-C-Routinen ([»Add a Seven-Segment LED Display to your AVR microcontroller«](http://w8bh.net/avr/AvrSSD1.pdf))
 
+...Rolf
 
 
 

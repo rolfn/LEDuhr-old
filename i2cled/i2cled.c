@@ -7,7 +7,7 @@
     For Adafruit 7-segment 1.2"/0.56" LED displays (HT16K33);
     see: https://learn.adafruit.com/adafruit-led-backpack/
     Code based on http://w8bh.net/avr/AvrSSD1.pdf
-    Rolf Niepraschk, Rolf.Niepraschk@gmx.de,
+    Rolf Niepraschk, Rolf.Niepraschk@gmx.de
 */
 
 void I2C_WriteByte(uint8_t busAddr, uint8_t data) {

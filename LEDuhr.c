@@ -45,7 +45,7 @@ int main(void) {
 
   sei();
 
-  PORTD = 0xFF;		// enable pull ups
+  PORTD = 0xFF; // enable pull ups
   DDRD |= 1<<PD3;
 
   timebase_init();
@@ -60,8 +60,8 @@ int main(void) {
       timeflags = 0;
       clock();
 
-      printHEX(4, 19, dcf77error);
 #ifdef DEBUG
+      printHEX(3, 19, dcf77error);
       lcd_printlc(4, 1, getDigits(time.hour));
       lcd_printlc(4, 3, ":");
       lcd_printlc(4, 4, getDigits(time.minute));
@@ -72,7 +72,9 @@ int main(void) {
       lcd_printlc(4, 12, ".");
       lcd_printlc(4, 13, getDigits(time.month));
       lcd_printlc(4, 15, ".");
-      lcd_printlc(4, 16, getDigits(time.year));
+      lcd_printlc(4, 16, "2");
+      lcd_printlc(4, 17, "0");
+      lcd_printlc(4, 18, getDigits(time.year));
 #endif
       // first LED display: time
       SS_SetDigit(LED_DISP_1, 0, time.hour / 10);

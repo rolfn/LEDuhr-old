@@ -39,7 +39,6 @@
 # MCU name
 MCU = atmega8
 
-
 # Processor frequency.
 #     This will define a symbol, F_CPU, in all source code files equal to the
 #     processor frequency. You can then use this symbol in your source code to
@@ -54,9 +53,9 @@ FORMAT = ihex
 TARGET = LEDuhr
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c
+SRC = $(TARGET).c RN-utils.c
 SRC += dcf77/clock.c dcf77/dcf77.c dcf77/timebase.c i2c/twimaster.c
-SRC += i2clcd/i2clcd.c i2cled/i2cled.c RN-utils.c
+SRC += i2clcd/i2clcd.c i2cled/i2cled.c
 
 # Hardware related defines
 # DCF77
@@ -66,6 +65,8 @@ CDEFS += -DDCF77_INVERTED # ELV module
 CDEFS += -D"LCD_I2C_DEVICE=(0x3F << 1)"
 CDEFS += -D"LED_DISP_1=(0x70 << 1)"
 CDEFS += -D"LED_DISP_2=(0x71 << 1)"
+
+CDEFS += -DLCD_LINES=4 -DLCD_COLS=20
 
 # List Assembler source files here.
 #     Make them always end in a capital .S.  Files ending in a lowercase .s
