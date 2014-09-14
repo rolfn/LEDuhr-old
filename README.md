@@ -31,6 +31,7 @@
 - Arduino Pro Mini 328 - 5V/16MHz ([SparkFun](https://www.sparkfun.com/products/11113))
 - DCF-Empfangsmodul ([ELV](http://www.elv.de/output/controller.aspx?cid=74&detail=10&detail2=28116))
 - Zusätzliche längere Ferrit-Antenne ([Arduino Projects4u](http://www.arduino-projects4u.com/product/100mm-lenth-ferrite-rod-antenna-775/))
+- Zweitast-Codierschalter ([PICO-D 131](http://www.hartmann-codier.de/familie_19.html?id=222))
 
 ## Software-Komponenten
 
