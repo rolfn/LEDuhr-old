@@ -61,7 +61,7 @@ int main(void) {
       clock();
 
 #ifdef DEBUG
-      printHEX(3, 19, dcf77error);
+      printHEX(1, 19, dcf77error);
       lcd_printlc(4, 1, getDigits(time.hour));
       lcd_printlc(4, 3, ":");
       lcd_printlc(4, 4, getDigits(time.minute));
