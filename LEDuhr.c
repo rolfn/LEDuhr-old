@@ -3,8 +3,8 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include "dcf77/dcf77.h"
-#include "i2clcd.h"
 #include "i2c/i2cmaster.h"
+#include "i2clcd.h"
 #include "i2cled.h"
 
 #include "RN-utils.h"

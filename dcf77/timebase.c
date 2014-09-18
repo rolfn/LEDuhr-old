@@ -5,7 +5,7 @@
  *                      danni@specs.de
  *
  */
-///#include "iocompat.h"
+
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
