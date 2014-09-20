@@ -12,21 +12,6 @@
 #define DEBUG
 #define SHOW_SECONDS
 
-#define BCD_EN_DDR   DDRD
-#define BCD_EN_PORT  PORTD
-#define BCD_EN_MIN_1    PD4
-#define BCD_EN_MIN_10   PD5
-#define BCD_EN_HOUR_1   PD6
-#define BCD_EN_HOUR_10  PD7
-
-#define BCD_DDR      DDRC
-#define BCD_PORT     PORTC
-#define BCD_IN_PORT  PINC
-#define BCD_PIN1     PC0
-#define BCD_PIN2     PC1
-#define BCD_PIN3     PC2
-#define BCD_PIN4     PC3
-
 typedef struct {
   uint8_t minute;
   uint8_t hour;
@@ -80,6 +65,8 @@ char *getDigits(uint8_t nb) {
   return buf;
 }
 
+uint8_t tickCnt = 0, bar = '*', foo;
+
 int main(void) {
 
   i2c_init();
@@ -112,8 +99,6 @@ int main(void) {
   lcd_printlc(1, 1, "DCF77");
 #endif
 
-  sei();
-
   //??//PORTD = 0xFF; // enable pull ups
   //DDRD |= 1<<PD3;
 
@@ -125,6 +110,20 @@ int main(void) {
     //if( DCF77_PIN & 1<<DCF77 ) PORTD |= 1<< PD3;
     //else PORTD &= ~(1<<PD3);
     _delay_us(1); // ???
+
+    if( timeflags & 1<<ONE_TICK ) { // Call every 1s/64 = 15.625ms
+      timeflags &= ~(1<<ONE_TICK);
+      if (tickCnt & 0x40) {
+        tickCnt = 0;
+        bar = !bar;
+        if (bar) {
+          lcd_printlc(1, 10, "o");
+        } else {
+          lcd_printlc(1, 10, "-");
+        }
+      }
+      tickCnt += 1;
+    }
 
     if( timeflags & 1<<ONE_SECOND ) {
       timeflags = 0;
