@@ -65,7 +65,7 @@ char *getDigits(uint8_t nb) {
   return buf;
 }
 
-uint8_t tickCnt = 0, bar = '*', foo;
+uint8_t tickCnt = 0, bar = 0;
 
 int main(void) {
 
@@ -99,27 +99,22 @@ int main(void) {
   lcd_printlc(1, 1, "DCF77");
 #endif
 
-  //??//PORTD = 0xFF; // enable pull ups
-  //DDRD |= 1<<PD3;
-
   timebase_init();
   sei();
 
   for(;;) {
 
-    //if( DCF77_PIN & 1<<DCF77 ) PORTD |= 1<< PD3;
-    //else PORTD &= ~(1<<PD3);
-    _delay_us(1); // ???
+    _delay_us(1);
 
     if( timeflags & 1<<ONE_TICK ) { // Call every 1s/64 = 15.625ms
       timeflags &= ~(1<<ONE_TICK);
-      if (tickCnt & 0x40) {
+      if (tickCnt & 0x40) { // 64 * 15.625ms = 1000ms
         tickCnt = 0;
         bar = !bar;
         if (bar) {
-          lcd_printlc(1, 10, "o");
+          lcd_printlc(1, 10, "^");
         } else {
-          lcd_printlc(1, 10, "-");
+          lcd_printlc(1, 10, "_");
         }
       }
       tickCnt += 1;
