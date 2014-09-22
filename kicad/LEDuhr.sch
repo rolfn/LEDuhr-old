@@ -148,7 +148,7 @@ L CRYSTAL_SMD Q1
 U 1 1 54175672
 P 4300 1750
 F 0 "Q1" H 4300 1840 40  0000 C CNN
-F 1 "16MHz" H 4330 1640 40  0000 L CNN
+F 1 "16MHz" H 4400 1650 40  0000 L CNN
 F 2 "" H 4300 1750 60  0000 C CNN
 F 3 "" H 4300 1750 60  0000 C CNN
 	1    4300 1750
@@ -605,7 +605,7 @@ F 3 "" H 8100 3950 60  0000 C CNN
 $EndComp
 Text Notes 6100 3850 2    60   ~ 0
 Arduino Pro Mini 328 - 5V/16MHz (SparkFun)
-Text Notes 9400 4450 2    60   ~ 0
+Text Notes 9400 4350 2    60   ~ 0
 adjustment of the wake-up time
 Text Notes 6100 7450 2    60   ~ 0
 Displays
@@ -718,7 +718,7 @@ Wire Wire Line
 Wire Wire Line
 	4750 800  4950 800 
 Wire Wire Line
-	1800 1200 1700 1200
+	1700 1200 1800 1200
 Connection ~ 1700 1200
 Wire Wire Line
 	1800 1100 1700 1100
@@ -1056,11 +1056,9 @@ Wire Notes Line
 Wire Notes Line
 	7000 600  9600 600 
 Wire Notes Line
-	9600 600  9600 4600
+	9600 600  9600 4850
 Wire Notes Line
-	9600 4600 7000 4600
-Wire Notes Line
-	7000 4600 7000 600 
+	7000 600  7000 4850
 Wire Notes Line
 	750  4100 6250 4100
 Wire Notes Line
@@ -1105,4 +1103,34 @@ Wire Wire Line
 	1700 1100 1700 1200
 Wire Wire Line
 	1700 1200 1700 1400
+$Comp
+L SW_PUSH S2
+U 1 1 5420337E
+P 7800 4600
+F 0 "S2" H 7950 4710 50  0000 C CNN
+F 1 "on/off" H 7800 4520 50  0000 C CNN
+F 2 "" H 7800 4600 60  0000 C CNN
+F 3 "" H 7800 4600 60  0000 C CNN
+	1    7800 4600
+	1    0    0    -1  
+$EndComp
+Wire Notes Line
+	7000 4850 9600 4850
+Text GLabel 7350 4600 0    47   Input ~ 0
+PB1
+Wire Wire Line
+	7500 4600 7350 4600
+$Comp
+L GND #PWR?
+U 1 1 54204751
+P 8250 4600
+F 0 "#PWR?" H 8250 4600 30  0001 C CNN
+F 1 "GND" H 8250 4530 30  0001 C CNN
+F 2 "" H 8250 4600 60  0000 C CNN
+F 3 "" H 8250 4600 60  0000 C CNN
+	1    8250 4600
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	8100 4600 8250 4600
 $EndSCHEMATC
