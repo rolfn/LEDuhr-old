@@ -55,7 +55,7 @@ TARGET = LEDuhr
 # List C source files here. (C dependencies are automatically generated.)
 SRC = $(TARGET).c RN-utils.c
 SRC += dcf77/clock.c dcf77/dcf77.c dcf77/timebase.c i2c/twimaster.c
-SRC += i2clcd/i2clcd.c i2cled/i2cled.c
+SRC += i2clcd/i2clcd.c i2cled/i2cled.c keyscan/keyscan.c
 
 # Hardware related defines
 # DCF77
@@ -75,6 +75,10 @@ CDEFS += -DBCD_EN_MIN_1=PD4  -DBCD_EN_MIN_10=PD5
 CDEFS += -DBCD_EN_HOUR_1=PD6  -DBCD_EN_HOUR_10=PD7
 CDEFS += -DBCD_DDR=DDRC -DBCD_PORT=PORTC -DBCD_IN_PORT=PINC
 CDEFS += -DBCD_PIN1=PC0 -DBCD_PIN2=PC1 -DBCD_PIN3=PC2 -DBCD_PIN4=PC3
+
+# keyscan, key definition
+CDEFS += -DKEY_PIN=PINB -DKEY_PORT=PORTB -DTHEKEY=PB1 -DREPEAT_MASK="(1<<THEKEY)"
+CDEFS += -D"KEYSCAN_PERIOD=(1.0 / 64)"
 
 # List Assembler source files here.
 #     Make them always end in a capital .S.  Files ending in a lowercase .s

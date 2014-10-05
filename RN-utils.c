@@ -22,13 +22,29 @@ void outDEC(uint8_t val, char *outp) {
   }
 }
 
+void outDEC_L(uint16_t val, char *outp) {
+  int8_t i = 5;
+  uint16_t v = val;
+  outp[i] = '\0';
+  while(--i >= 0) {
+     outp[i] = '0' + v % 10;
+     v /= 10;
+  }
+}
+
 char buf[8];
+
 void printHEX(uint8_t l, uint8_t c, uint8_t val) {
   outHEX(val, buf);
   lcd_printlc(l, c, buf);
 }
 void printDEC(uint8_t l, uint8_t c, uint8_t val) {
   outDEC(val, buf);
+  lcd_printlc(l, c, buf);
+}
+
+void printDEC_L(uint8_t l, uint8_t c, uint16_t val) {
+  outDEC_L(val, buf);
   lcd_printlc(l, c, buf);
 }
 

@@ -4,18 +4,17 @@
 #include <avr/io.h>
 #include "dcf77/dcf77.h"
 #include "i2c/i2cmaster.h"
-#include "i2clcd.h"
-#include "i2cled.h"
+#include "i2clcd/i2clcd.h"
+#include "i2cled/i2cled.h"
+
+#include "keyscan/keyscan.h"
+
+#include "LEDuhr.h"
 
 #include "RN-utils.h"
 
 #define DEBUG
 #define SHOW_SECONDS
-
-typedef struct {
-  uint8_t minute;
-  uint8_t hour;
-} wakeup_time;
 
 wakeup_time wakeupTime;
 
@@ -66,6 +65,8 @@ char *getDigits(uint8_t nb) {
 }
 
 uint8_t tickCnt = 0, bar = 0;
+uint16_t s_good, s_bad;
+uint32_t quality;
 
 int main(void) {
 
@@ -81,7 +82,7 @@ int main(void) {
   SS_SetColon(LED_DISP_1, 1);
   SS_SetColon(LED_DISP_2, 0);
 
-  timebase_init();
+  //timebase_init();
 
   // Ausgänge festlegen
   BCD_EN_DDR |= _BV(BCD_EN_MIN_1) | _BV(BCD_EN_MIN_10) | _BV(BCD_EN_HOUR_1) | _BV(BCD_EN_HOUR_10);
@@ -100,6 +101,7 @@ int main(void) {
 #endif
 
   timebase_init();
+  KEY_PORT |= 1<<THEKEY;                                  // Pullup on
   sei();
 
   for(;;) {
@@ -108,20 +110,36 @@ int main(void) {
 
     if( timeflags & 1<<ONE_TICK ) { // Call every 1s/64 = 15.625ms
       timeflags &= ~(1<<ONE_TICK);
-      if (tickCnt & 0x40) { // 64 * 15.625ms = 1000ms
+      keyscan();
+#ifdef DEBUG
+      if (tickCnt & 0x80) { // 128 * 15.625ms = 2000ms
         tickCnt = 0;
-        bar = !bar;
-        if (bar) {
-          lcd_printlc(1, 10, "^");
-        } else {
-          lcd_printlc(1, 10, "_");
-        }
+        lcd_printlc(1, 10, " ");
       }
       tickCnt += 1;
+      getKey(1<<THEKEY);
+      if ( (key==SHORT_KEY) || (key==LONG_KEY) || (key==VERYLONG_KEY) ) {
+        switch (key) {
+          case SHORT_KEY:
+            lcd_printlc(1, 10, "S");
+            break;
+          case LONG_KEY:
+            lcd_printlc(1, 10, "L");
+            break;
+          case VERYLONG_KEY:
+            lcd_printlc(1, 10, "V");
+            break;
+        }
+        key = NO_KEY;
+      }
+#endif
     }
 
     if( timeflags & 1<<ONE_SECOND ) {
-      timeflags = 0;
+      //printHEX(2, 16, timeflags);
+      //timeflags = 0;
+      timeflags &= ~(1<<ONE_SECOND);
+
       clock();
 
 #ifdef DEBUG
@@ -156,16 +174,20 @@ int main(void) {
       SS_SetDigit(LED_DISP_2, 3, time.month % 10);
 #endif
 
+      if(time.second == 2) {
+        if ( dcf77error == 0 ) s_good++;
+        else s_bad++;
+        quality = ((uint32_t)s_good * (uint32_t)1000) / (uint32_t)(s_good+s_bad);
+        printDEC_L(2, 10, s_good);
+        printDEC_L(2, 16, s_bad);
+        printDEC_L(1, 12, (uint16_t)quality);
+      }
+
       getWakeupTime();
       printDEC(2, 1, wakeupTime.hour);
       lcd_printlc(2, 4, ":");
       printDEC(2, 5, wakeupTime.minute);
 
-      if ( synchronize == 0xFF ) {
-
-        //
-
-      }
     }
   }
 }

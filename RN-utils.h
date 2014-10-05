@@ -9,6 +9,7 @@ extern void outHEX(uint8_t val, char *outp);
 
 extern void printHEX(uint8_t l, uint8_t c, uint8_t val);
 extern void printDEC(uint8_t l, uint8_t c, uint8_t val);
+extern void printDEC_L(uint8_t l, uint8_t c, uint16_t val);
 
 #define ClearBit(x,y) x &= ~_BV(y)      //   equivalent to   cbi(x,y)
 #define SetBit(x,y) x |= _BV(y)         //   equivalent to   sbi(x,y)

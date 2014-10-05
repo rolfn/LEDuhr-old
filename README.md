@@ -41,6 +41,7 @@
 - I2C-C-Bibliothek ([»I2C Master Interface«](http://homepage.hispeed.ch/peterfleury/avr-software.html))
 - I2C-LCD-C-Bibliothek ([»I2CLCD Library für HD44780 LCDs«](http://www.mikrocontroller.net/topic/334653))
 - I2C-LED-C-Routinen ([»Add a Seven-Segment LED Display to your AVR microcontroller«](http://w8bh.net/avr/AvrSSD1.pdf))
+- Debouncing-C-Bibliothek ([»Universelle Tastenabfrage«](http://www.mikrocontroller.net/topic/48465))
 
 ...Rolf
 

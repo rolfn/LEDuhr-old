@@ -71,7 +71,7 @@ ISR(TIMER0_OVF_vect)
     TCNT0 = (uint16_t)(256 - T0COUNT); // reload per tick: -183
     if( ++ct_64Hz & 0x3F )
       { // 64 ticks = one second
-        timeflags = 1<<ONE_TICK; // one tick over
+        timeflags = 1<<ONE_TICK; // one tick overkeyscan();
         return;
       }
     TCNT0 = (uint16_t)(256 - T0COUNTSEC); // reload per second: -189
