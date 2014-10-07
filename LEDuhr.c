@@ -16,7 +16,8 @@
 #define DEBUG
 
 wakeup_time wakeupTime;
-uint8_t modeFlag = 0;
+uint8_t modeflag = 0;
+uint8_t beforeFirstSync = 1;
 
 #define  SHOW_SECONDS 0
 
@@ -121,19 +122,23 @@ int main(void) {
       if ( (key==SHORT_KEY) || (key==LONG_KEY) || (key==VERYLONG_KEY) ) {
         switch (key) {
           case SHORT_KEY:
-            lcd_printlc(1, 10, "S");
+            lcd_printlc(1, 14, "S");
             break;
           case LONG_KEY:
-            lcd_printlc(1, 10, "L");
-            modeFlag ^= (1<<SHOW_SECONDS); // toggle between date and seconds
+            lcd_printlc(1, 14, "L");
+            SS_SetDigitRaw(LED_DISP_2, 0, 0);
+            SS_SetDigitRaw(LED_DISP_2, 1, 0);
+            SS_SetDigitRaw(LED_DISP_2, 2, 0);
+            SS_SetDigitRaw(LED_DISP_2, 3, 0);
+            modeflag ^= (1<<SHOW_SECONDS); // toggle between date and seconds
             break;
           case VERYLONG_KEY:
-            lcd_printlc(1, 10, "V");
+            lcd_printlc(1, 14, "V");
             break;
         }
         key = NO_KEY;
         _delay_ms(2000);
-        lcd_printlc(1, 10, " ");
+        lcd_printlc(1, 14, " ");
       }
 #endif
     }
@@ -147,6 +152,7 @@ int main(void) {
 
 #ifdef DEBUG
       printHEX(1, 19, dcf77error);
+      printHEX(1, 16, dcf77error);
       lcd_printlc(4, 1, getDigits(time.hour));
       lcd_printlc(4, 3, ":");
       lcd_printlc(4, 4, getDigits(time.minute));
@@ -167,7 +173,7 @@ int main(void) {
       SS_SetDigit(LED_DISP_1, 2, time.minute / 10);
       SS_SetDigit(LED_DISP_1, 3, time.minute % 10);
       // second LED display: date or secondsS
-      if ( modeFlag & 1<<SHOW_SECONDS ) {
+      if ( modeflag & 1<<SHOW_SECONDS ) {
         SS_BlankDigit(LED_DISP_2, 0);
         SS_BlankDigit(LED_DISP_2, 1);
         SS_SetDigit(LED_DISP_2, 2, time.second / 10);
@@ -176,16 +182,30 @@ int main(void) {
         SS_SetDigit(LED_DISP_2, 0, time.day / 10);
         SS_SetDigit(LED_DISP_2, 1, time.day % 10 | SET_DP);
         SS_SetDigit(LED_DISP_2, 2, time.month / 10);
-        SS_SetDigit(LED_DISP_2, 3, time.month % 10);
+        SS_SetDigit(LED_DISP_2, 3, time.month % 10 | SET_DP);
       }
 #ifdef DEBUG
-      if(time.second == 1) {// some statistics
+      if(time.second == 3) {// some statistics
+        /*
         if ( dcf77error == 0 ) s_good++;
         else s_bad++;
-        quality = ((uint32_t)s_good * (uint32_t)1000) / (uint32_t)(s_good+s_bad);
-        printDEC_L(2, 10, s_good);
-        printDEC_L(2, 16, s_bad);
-        printDEC_L(1, 12, (uint16_t)quality);
+        */
+        if ( synchronize == 0xff ) {
+          if (beforeFirstSync) beforeFirstSync = 0;
+        }
+
+        if (!beforeFirstSync) {
+          if ( synchronize == 0xff ) {
+            s_good++;
+          } else {
+            s_bad++;
+          }
+          quality = ((uint32_t)s_good * (uint32_t)1000) / (uint32_t)(s_good+s_bad);
+          printDEC_L(2, 10, s_good);
+          printDEC_L(2, 16, s_bad);
+          printDEC_L(1, 8, (uint16_t)quality);
+        }
+        synchronize = 0;
       }
 #endif
       getWakeupTime();
