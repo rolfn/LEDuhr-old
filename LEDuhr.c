@@ -19,7 +19,11 @@ wakeup_time wakeupTime;
 uint8_t modeflag = 0;
 uint8_t beforeFirstSync = 1;
 
-#define  SHOW_SECONDS 0
+void checkAlarm(void) {
+  if (!(modeflag & 1<<WAKEUP) || (modeflag & 1<<ALARM)) return;
+  if ((wakeupTime.minute == time.minute) && (wakeupTime.hour == time.hour))
+    modeflag |= (1<<ALARM); // alarm on
+}
 
 void getWakeupTime(void) {
   uint8_t val = 0, tmp;
@@ -120,24 +124,45 @@ int main(void) {
       tickCnt += 1;
       */
       if ( (key==SHORT_KEY) || (key==LONG_KEY) || (key==VERYLONG_KEY) ) {
-        switch (key) {
-          case SHORT_KEY:
-            lcd_printlc(1, 14, "S");
-            break;
-          case LONG_KEY:
-            lcd_printlc(1, 14, "L");
-            SS_SetDigitRaw(LED_DISP_2, 0, 0);
-            SS_SetDigitRaw(LED_DISP_2, 1, 0);
-            SS_SetDigitRaw(LED_DISP_2, 2, 0);
-            SS_SetDigitRaw(LED_DISP_2, 3, 0);
-            modeflag ^= (1<<SHOW_SECONDS); // toggle between date and seconds
-            break;
-          case VERYLONG_KEY:
-            lcd_printlc(1, 14, "V");
-            break;
+        if ( modeflag & 1<<ALARM ) {
+          switch (key) {
+            case SHORT_KEY: // snooze on, alarm off, alarmtime += 5min
+              // TODO: Zeitenrechnerei; snooze off, wenn Alarmzeit erreicht
+              if (!(modeflag & 1<<SNOOZE)) {
+                modeflag |= (1<<SNOOZE);
+                // ...
+              }
+              break;
+            case LONG_KEY: // alarm off, snooze off
+              modeflag &= ~((1 << ALARM) | (1 << SNOOZE));
+              // TODO: Jetzt wieder Alarmzeit von BCD-Schalter
+              break;
+            case VERYLONG_KEY:
+              //
+              break;
+          }
+        } else {
+          switch (key) {
+            case SHORT_KEY:
+              lcd_printlc(1, 14, "S");
+              modeflag ^= (1<<WAKEUP); // toggle wakeup on/off
+              // show active wakeup ...
+              break;
+            case LONG_KEY:
+              lcd_printlc(1, 14, "L");
+              SS_SetDigitRaw(LED_DISP_2, 0, 0);
+              SS_SetDigitRaw(LED_DISP_2, 1, 0);
+              SS_SetDigitRaw(LED_DISP_2, 2, 0);
+              SS_SetDigitRaw(LED_DISP_2, 3, 0);
+              modeflag ^= (1<<SHOW_SECONDS); // toggle between date and seconds
+              break;
+            case VERYLONG_KEY:
+              lcd_printlc(1, 14, "V");
+              break;
+          }
         }
         key = NO_KEY;
-        _delay_ms(2000);
+        _delay_ms(400);
         lcd_printlc(1, 14, " ");
       }
 #endif
@@ -190,9 +215,7 @@ int main(void) {
         if ( dcf77error == 0 ) s_good++;
         else s_bad++;
         */
-        if ( synchronize == 0xff ) {
-          if (beforeFirstSync) beforeFirstSync = 0;
-        }
+        if ( synchronize == 0xff ) beforeFirstSync = 0;
 
         if (!beforeFirstSync) {
           if ( synchronize == 0xff ) {
@@ -208,11 +231,20 @@ int main(void) {
         synchronize = 0;
       }
 #endif
-      getWakeupTime();
+      getWakeupTime(); // evtl. Beides vereinigen
+      checkAlarm();
+#ifdef DEBUG
       printDEC(2, 1, wakeupTime.hour);
       lcd_printlc(2, 4, ":");
       printDEC(2, 5, wakeupTime.minute);
-
+      lcd_printlc(4, 15, ".");
+      lcd_printlc(3, 1, "W=");
+      lcd_printlc(3, 3, (modeflag & 1<<WAKEUP) ? "1" : "0");
+      lcd_printlc(3, 5, "A=");
+      lcd_printlc(3, 7, (modeflag & 1<<ALARM) ? "1" : "0");
+      lcd_printlc(3, 9, "S=");
+      lcd_printlc(3, 11, (modeflag & 1<<SNOOZE) ? "1" : "0");
+#endif
     }
   }
 }
