@@ -13,5 +13,7 @@ typedef struct {
 #define  ALARM 2
 #define  SNOOZE 3
 
+#define SNOOZE_MINUTES 5
+
 
 #endif /* LEDUHR_H_ */

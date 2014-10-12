@@ -20,12 +20,28 @@ uint8_t modeflag = 0;
 uint8_t beforeFirstSync = 1;
 
 void checkAlarm(void) {
-  if (!(modeflag & 1<<WAKEUP) || (modeflag & 1<<ALARM)) return;
-  if ((wakeupTime.minute == time.minute) && (wakeupTime.hour == time.hour))
-    modeflag |= (1<<ALARM); // alarm on
+  if ((modeflag & 1<<WAKEUP) && (wakeupTime.minute == time.minute) &&
+    (wakeupTime.hour == time.hour)) modeflag |= (1<<ALARM); // alarm on
+  else modeflag &= ~(1<<ALARM);                             // alarm off
+}
+
+void increaseWakeupTime(void) {
+  wakeupTime.minute += SNOOZE_MINUTES;
+  if (wakeupTime.minute > 59) {
+    wakeupTime.minute -= 60;
+    wakeupTime.hour += 1;
+    if (wakeupTime.hour > 23) {
+      wakeupTime.hour -= 24;
+    }
+  }
+  // // //
+  printDEC(3, 13, wakeupTime.hour);
+  lcd_printlc(3, 16, ":");
+  printDEC(3, 17, wakeupTime.minute);
 }
 
 void getWakeupTime(void) {
+  if (modeflag & 1<<SNOOZE) return; // in snooze mode no update
   uint8_t val = 0, tmp;
   // 1. BCD-Schalter (Minuten-Einer) auswählen.
   BCD_EN_PORT = ~_BV(BCD_EN_MIN_1) & (_BV(BCD_EN_MIN_10) | _BV(BCD_EN_HOUR_1) |
@@ -124,18 +140,18 @@ int main(void) {
       tickCnt += 1;
       */
       if ( (key==SHORT_KEY) || (key==LONG_KEY) || (key==VERYLONG_KEY) ) {
-        if ( modeflag & 1<<ALARM ) {
+        if ((modeflag & 1<<ALARM) || (modeflag & 1<<SNOOZE)) {
           switch (key) {
             case SHORT_KEY: // snooze on, alarm off, alarmtime += 5min
-              // TODO: Zeitenrechnerei; snooze off, wenn Alarmzeit erreicht
-              if (!(modeflag & 1<<SNOOZE)) {
-                modeflag |= (1<<SNOOZE);
-                // ...
+              // TODO: Ist SNOOZE-Bit überhaupt nötig?
+              if (!(modeflag & 1<<SNOOZE)) modeflag |= (1 << SNOOZE);
+              if ((modeflag & 1<<SNOOZE) && (modeflag & 1<<ALARM)) {
+                increaseWakeupTime();
               }
               break;
             case LONG_KEY: // alarm off, snooze off
               modeflag &= ~((1 << ALARM) | (1 << SNOOZE));
-              // TODO: Jetzt wieder Alarmzeit von BCD-Schalter
+              // now alarmtime again from BCD switches
               break;
             case VERYLONG_KEY:
               //
