@@ -28,10 +28,12 @@ rectangle $b $h;
 set A {-90 -50}
 set B {-90 50}
 
+pen black 0.3 solid;
 moveto [expr $b /2 + $dimDist] [expr -$h /2];
 dimlinerel 0 $h;
 moveto [expr -$b /2] [expr $h /2 + $dimDist];
 dimlinerel $b 0;
+pen black 0.5 solid;
 
 set bLp2        $bDP2;
 set hLp2        26;
