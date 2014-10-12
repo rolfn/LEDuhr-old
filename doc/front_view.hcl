@@ -1,13 +1,12 @@
-unitlength 1;    # Maßstab 1:1
 
-# Eingaben
-# --------
+unitlength 1;           # Maßstab 1:1
+font Sans_Serif 4;
+pen black 0.5 solid;
 
-# SI-Einheiten: mm, kN
-# Nullpunkt ist Plattenmittelpunkt
+set b           160;
+set h           100;
 
-set b           160;    # Plattenbreite
-set h           100;    # Plattenhöhe
+set dimDist      7.5;
 
 set bDP1        120;
 set hDP1        40.8;
@@ -19,12 +18,21 @@ set hLp1        50;
 set bLp2        $bDP2;
 set hLp2        26;
 
-pen black 0.5 solid;
-
 moveto 0 0
 moverel [ expr -$b /2 ]  [ expr -$h / 2 ];
 rectangle $b $h;
-                 ;
+
+#moveto 0 0
+#moverel [ expr -$b /2 ]  [ expr -$h / 2 ];
+
+set A {-90 -50}
+set B {-90 50}
+
+moveto [expr $b /2 + $dimDist] [expr -$h /2];
+dimlinerel 0 $h;
+moveto [expr -$b /2] [expr $h /2 + $dimDist];
+dimlinerel $b 0;
+
 set bLp2        $bDP2;
 set hLp2        26;
 
