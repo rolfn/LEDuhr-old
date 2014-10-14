@@ -70,47 +70,54 @@ dimlinerel [expr 2 * $wd2] 0;
 pen black 0.5 solid;
 
 proc drawBig7Seg {offs} {
-  #pen black 0.3 solid;
-  #unitlength 0.519480519481;
-  #moverel $dx $dy;
-  offset $offs;
-  #circle 2;
-  set a "17.66 6.13 19.58 8.67 30.18 8.57 32.83 6.03 32.47 5.45 18.23 5.35";
+  proc drawSeg {x} {
+    pen orange;
+    fillpolygon $x;
+    pen black 0.15 solid;
+    polygon $x;
+  }
+  proc draw7Seg {} {
+    # "A"
+    drawSeg "6.03 5.71 7.99 8.12 19.10 8.12 21.99 5.63 21.51 5.06 6.66 5.03"
+    # "B"
+    drawSeg "22.27 6.05 19.39 8.46 17.56 18.61 18.81 20.02 20.57 18.61 22.77 6.58"
+    # "C"
+    drawSeg "18.74 20.75 16.82 22.32 15.17 32.28 17.11 34.67 17.82 34.20 19.94 22.27"
+    # "D"
+    drawSeg "0.76 35.11 1.10 35.61 16.04 35.64 16.77 35.09 14.75 32.65 3.44 32.73"
+    # "E"
+    drawSeg "3.88 20.75 2.10 22.27 0.00 34.14 0.42 34.72 3.38 32.10 5.11 22.2"
+    # "F"
+    drawSeg "5.53 6.03 4.85 6.58 2.75 18.61 3.96 19.99 5.76 18.45 7.63 8.46";
+    # "G"
+    drawSeg "4.30 20.41 5.50 21.91 16.61 21.88 18.34 20.39 17.16 18.89 6.03 18.89"
+  }
+
+  offset $offs;   # linke obere Ecke Display 1
+
   pen orange;
-  fillpolygon $a;
+  fillcircle 65.22 13.6 1.5;
+  fillcircle 62.68 28.56 1.5;
   pen black 0.15 solid;
-  polygon $a;
-  set b "33.19 6.39 30.39 9.09 28.67 19.74 29.87 21.30 31.63 19.74 33.66 6.96";
-  pen orange;
-  fillpolygon $b;
-  pen black 0.15 solid;
-  polygon $b;
-##################################
-# 57.2  42.5
-# 54  45.8
-# 50.9  66.1
-# 54.5  71
-# 55.8  70
-# 59.5  45.6
-##################################
-  set c "29.71 22.08 28.05 23.79 26.44 34.34 28.31 36.88 28.99 36.36 30.91 23.69";
-  pen orange;
-  fillpolygon $c;
-  pen black 0.15 solid;
-  polygon $c;
-  set e "15.584 22.13 14.026 23.636 12 36.36 12.467 36.99 15.169 34.338 16.83 23.584";
-  pen orange;
-  fillpolygon $e;
-  pen black 0.15 solid;
-  polygon $e;
-  set f "16.623 7.013 14.54 19.74 15.844 21.3 17.558 19.74 19.22 8.88 17.3 6.338";
-  pen orange;
-  fillpolygon $f;
-  pen black 0.15 solid;
-  polygon $f;
+  circle 65.22 13.6 1.5;
+  circle 62.68 28.56 1.5;
+
+  circle 8.7 13.6 1.5;
+  circle 6.158 28.56 1.5;
+
+  circle 94.5 6.4 1.5;
+
+  offset 12.63 0; # Start 7-Segment No. 1
+  draw7Seg;
+  offset 25 0;    # Start 7-Segment No. 2
+  draw7Seg;
+  offset 30.6 0;  # Start 7-Segment No. 3
+  draw7Seg;
+  offset 25 0;    # Start 7-Segment No. 4
+  draw7Seg;
 }
 
-moveto $DP1pos;
+#moveto $DP1pos;
 drawBig7Seg $DP1pos;
 
 
