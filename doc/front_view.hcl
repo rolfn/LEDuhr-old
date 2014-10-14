@@ -19,6 +19,8 @@ set wd2DP2   25.1;   # halbe Breite von Display 2
 set ht2DP2   9.5;    # halbe Höhe   von Display 2
 
 set indRad   2.5;
+set DP1Rad   1.5;
+set DP2Rad   0.67;
 set dimDist  7.5;
 
 # Gesamte Frontplatte
@@ -46,8 +48,11 @@ pen black 0.15 solid;
 rectangle [expr 2 * $wd2DP2L] [expr 2 * $ht2DP2L];
 
 # Display 2
-moveto [expr $wd2DP1L - 2 * $wd2DP2L ] [expr $ht2DP1L - $ht2DP2 ];
-set DP2pos [here];
+#moveto [expr $wd2DP1L - 2 * $wd2DP2L ] [expr $ht2DP1L - $ht2DP2 ];
+#set DP2pos [here];
+set DP2pos "[expr $wd2DP1L - 2 * $wd2DP2L ] [expr $ht2DP1L - $ht2DP2 ]";
+moveto $DP2pos
+
 pen lightgray;
 fillrectangle [expr 2 * $wd2DP2] [expr 2 * $ht2DP2];
 pen black 0.15 solid;
@@ -58,9 +63,6 @@ moveto [expr 10 -$wd2DP1L] $ht2DP1L;
 pen orange; fillcircle $indRad;
 pen black 0.15 solid; circle $indRad;
 
-circle $DP1pos 1;
-circle $DP2pos 1;
-
 pen black 0.3 solid;
 moveto [expr $wd2 + $dimDist] [expr -$ht2];
 dimlinerel 0 [expr 2 * $ht2];
@@ -69,13 +71,32 @@ dimlinerel [expr 2 * $wd2] 0;
 
 pen black 0.5 solid;
 
+proc drawSeg {x} {
+  pen orange;
+  fillpolygon $x;
+  pen black 0.15 solid;
+  polygon $x;
+}
+
+proc drawSmall7Seg {offs} {
+  pen black 0.15 solid;
+  global DP2Rad;
+
+  moveto $offs;   # linke obere Ecke Display 2
+
+  moverel 25.63 5.63; circle $DP2Rad;
+  moverel -1.15 7.92; circle $DP2Rad;
+  moverel -14.06 2.52; circle $DP2Rad;
+  moverel 25.53 0; circle $DP2Rad;
+  moverel 12.7 0;
+  pen orange; fillcircle $DP2Rad;
+  pen black; circle $DP2Rad;
+  moverel -25.4 0;
+  pen orange; fillcircle $DP2Rad;
+  pen black; circle $DP2Rad;
+}
+
 proc drawBig7Seg {offs} {
-  proc drawSeg {x} {
-    pen orange;
-    fillpolygon $x;
-    pen black 0.15 solid;
-    polygon $x;
-  }
   proc draw7Seg {} {
     # "A"
     drawSeg "6.03 5.71 7.99 8.12 19.10 8.12 21.99 5.63 21.51 5.06 6.66 5.03"
@@ -93,31 +114,45 @@ proc drawBig7Seg {offs} {
     drawSeg "4.30 20.41 5.50 21.91 16.61 21.88 18.34 20.39 17.16 18.89 6.03 18.89"
   }
 
-  offset $offs;   # linke obere Ecke Display 1
-
-  pen orange;
-  fillcircle 65.22 13.6 1.5;
-  fillcircle 62.68 28.56 1.5;
   pen black 0.15 solid;
-  circle 65.22 13.6 1.5;
-  circle 62.68 28.56 1.5;
 
-  circle 8.7 13.6 1.5;
-  circle 6.158 28.56 1.5;
+  global DP1Rad;
 
-  circle 94.5 6.4 1.5;
+  moveto $offs;   # linke obere Ecke Display 1
+  moverel 8.7 13.6; circle $DP1Rad;
+  moverel -2.54 14.96; circle $DP1Rad;
+  moverel 88.7 -22; circle $DP1Rad;
 
-  offset 12.63 0; # Start 7-Segment No. 1
-  draw7Seg;
-  offset 25 0;    # Start 7-Segment No. 2
-  draw7Seg;
-  offset 30.6 0;  # Start 7-Segment No. 3
-  draw7Seg;
-  offset 25 0;    # Start 7-Segment No. 4
-  draw7Seg;
+  moveto $offs;
+  moverel 65.22 13.6
+  pen orange; fillcircle $DP1Rad;
+  pen black; circle $DP1Rad;
+  moverel -2.54 14.96;
+  pen orange; fillcircle $DP1Rad;
+  pen black; circle $DP1Rad;
+
+  moveto $offs;
+
+  offset $offs;
+  set x [X $offs];
+  set y [Y $offs];
+  set x [expr $x + 12.63];
+  offset 12.63 0; draw7Seg; # Start 7-Segment No. 1
+  set x [expr $x + 25];
+  offset 25 0; draw7Seg;    # Start 7-Segment No. 2
+  set x [expr $x + 30.6];
+  offset 30.6 0; draw7Seg;  # Start 7-Segment No. 3
+  set x [expr $x + 25];
+  offset 25 0; draw7Seg;    # Start 7-Segment No. 4
+
+  offset [expr -1 * $x] [expr -1 * $y]; # reset offset;
+
 }
 
-#moveto $DP1pos;
-drawBig7Seg $DP1pos;
 
+drawBig7Seg $DP1pos;
+drawSmall7Seg $DP2pos;
+
+circle $DP1pos 1;
+circle $DP2pos 1;
 
