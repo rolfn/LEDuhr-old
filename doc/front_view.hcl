@@ -1,4 +1,4 @@
-unitlength 1;           # Maßstab 1:1
+unitlength 1.5;           # Maßstab 1.5:1
 font Sans_Serif 3;
 
 set wd2 80; # half width
@@ -9,7 +9,7 @@ set wd2DP1L  60;     # half width of board of Display 1  # 4.72" = 119.9mm ~= 12
 set ht2DP1L  25.4;   # half height of board of Display 1 # 1" = 25.4mm
 set wd2DP1   60;     # half width of Display 1
 set ht2DP1   20.4;   # half height of Display 1
-set DP1posOffs -3.86;
+set DP1posOffs -4;
 
 ### set f 3.8446 # 193 / 50.2
 set wd2DP2L  25;   # half width of board of Display 2  # 1.97" = 50.038mm
@@ -198,7 +198,7 @@ proc drawBig7Seg {pos} {
   moverel 88.4 -22; circle $DP1Rad;
 
   moveto $pos;
-  moverel 65.22 13.6
+  moverel 65.22 13.6;
   pen orange; fillcircle $DP1Rad;
   pen black; circle $DP1Rad;
   moverel -2.54 14.96;
