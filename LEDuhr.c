@@ -225,8 +225,9 @@ int main(void) {
         SS_SetDigit(LED_DISP_2, 2, time.month / 10);
         SS_SetDigit(LED_DISP_2, 3, time.month % 10 | SET_DP);
       }
+
+      if(time.second == 1) {// some statistics
 #ifdef DEBUG
-      if(time.second == 3) {// some statistics
         /*
         if ( dcf77error == 0 ) s_good++;
         else s_bad++;
@@ -245,10 +246,12 @@ int main(void) {
           printDEC_L(1, 8, (uint16_t)quality);
         }
         synchronize = 0;
-      }
 #endif
-      getWakeupTime(); // evtl. Beides vereinigen
-      checkAlarm();
+        getWakeupTime(); // evtl. Beides vereinigen
+        checkAlarm();
+      }
+
+
 #ifdef DEBUG
       printDEC(2, 1, wakeupTime.hour);
       lcd_printlc(2, 4, ":");

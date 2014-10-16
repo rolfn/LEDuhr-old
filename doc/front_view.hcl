@@ -1,5 +1,5 @@
 unitlength 1;           # Maßstab 1:1
-font Sans_Serif 4;
+font Sans_Serif 3;
 
 set wd2 80; # half width
 set ht2 50; # half height
@@ -23,7 +23,8 @@ set DP1Rad   1.5;
 set DP2Rad   0.67;
 set DP1Lwd   0.15;
 set DP2Lwd   0.1;
-set dimDist  7.5;
+
+set dimDist  5;
 
 set DP1LholeRad 1;   # ø0.07874" = ø2mm
 set DP1LoffsX 3.6;   # (120mm - 112.78mm) / 2 = 3.6mm
@@ -34,7 +35,8 @@ set DP2LoffsX 3.156; # (50mm - 43.688mm) / 2 = 3.156mm
 set DP2LoffsY 2.667; # (28.194mm - 22.86mm) / 2 = 2.667mm
 
 set thickLine 0.5;
-set thinLine 0.15;
+set midLine 0.35;
+set thinLine 0.2;
 
 # wohle front plate
 moveto 0 0;
@@ -90,7 +92,7 @@ moveto [expr 10 -$wd2DP1L] $ht2DP1L;
 pen orange; fillcircle $indRad;
 pen black $thinLine solid; circle $indRad;
 
-pen black 0.3 solid;
+pen black midLine solid;
 moveto [expr $wd2 + $dimDist] [expr -$ht2];
 dimlinerel 0 [expr 2 * $ht2];
 moveto [expr -$wd2] [expr $ht2 + $dimDist];
@@ -223,6 +225,24 @@ proc drawBig7Seg {pos} {
 drawBig7Seg $DP1pos;
 drawSmall7Seg $DP2pos;
 
-circle $DP1pos 1;
-circle $DP2pos 1;
+###circle $DP1pos 1;
+###circle $DP2pos 1;
+
+pen black midLine solid;
+dimline -$wd2 [expr [Y $DP1pos] - 2 * $dimDist] [X $DP1pos] [expr [Y $DP1pos] - 2 * $dimDist];
+dimlinerel [expr 2 * $wd2DP1L] 0;
+dimline -$wd2 [Y $DP2pos] $DP2pos;  ###circle 5;
+
+moverel [expr 2 * $wd2DP2 + $dimDist] 0;
+dimlinerel 0 [expr 2 * $ht2DP2];
+moverel $dimDist [expr -$ht2DP2 - $ht2DP2L];
+dimlinerel 0 [expr 2 * $ht2DP2L];
+
+moveto $DP1pos;
+moverel [expr 2 * $wd2DP1 + $dimDist] 0;
+dimlinerel 0 [expr 2 * $ht2DP1];
+moverel $dimDist [expr -$ht2DP1 - $ht2DP1L];
+dimlinerel 0 [expr 2 * $ht2DP1L];
+
+
 
