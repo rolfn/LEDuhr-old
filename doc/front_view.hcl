@@ -9,12 +9,14 @@ set wd2DP1L  60;     # half width of board of Display 1  # 4.72" = 119.9mm ~= 12
 set ht2DP1L  25.4;   # half height of board of Display 1 # 1" = 25.4mm
 set wd2DP1   60;     # half width of Display 1
 set ht2DP1   20.4;   # half height of Display 1
+set DP1posOffs -3.86;
 
 ### set f 3.8446 # 193 / 50.2
 set wd2DP2L  25;   # half width of board of Display 2  # 1.97" = 50.038mm
 set ht2DP2L  14.1; # half height of board of Display 2 # 1.11" = 28.194mm
 set wd2DP2   25;   # half width of Display 2
 set ht2DP2   9.5;  # half height of Display 2
+set DP2posOffs -10;
 
 set indRad   2.5;
 set DP1Rad   1.5;
@@ -41,7 +43,7 @@ pen black $thickLine solid;
 rectangle [expr 2 * $wd2] [expr 2 * $ht2];
 
 # printed board Display 1
-moveto -$wd2DP1L  [expr -$ht2DP1L - $ht2DP2L ];
+moveto [expr $DP1posOffs - $wd2DP1L]  [expr -$ht2DP1L - $ht2DP2L ];
 pen black $thinLine solid;
 rectangle [expr 2 * $wd2DP1L] [expr 2 * $ht2DP1L];
 moverel $DP1LoffsX $DP1LoffsY;
@@ -54,7 +56,7 @@ moverel [expr 2 * ($DP1LoffsX - $wd2DP1L)] 0;
 circle $DP1LholeRad;
 
 # Display 1
-moveto -$wd2DP1L [expr -$ht2DP1L - $ht2DP2L + $ht2DP2 /2 ];
+moveto [expr $DP1posOffs - $wd2DP1L] [expr -$ht2DP1L - $ht2DP2L + $ht2DP2 /2 ];
 set DP1pos [here];
 pen lightgray;
 fillrectangle [expr 2 * $wd2DP1] [expr 2 * $ht2DP1];
@@ -62,7 +64,7 @@ pen black $thinLine solid;
 rectangle [expr 2 * $wd2DP1] [expr 2 * $ht2DP1];
 
 # printed board  Display 2
-moveto [expr $wd2DP1L - 2 * $wd2DP2L ] [expr $ht2DP1L - $ht2DP2L];
+moveto [expr $wd2DP1L - 2 * $wd2DP2L + $DP2posOffs] [expr $ht2DP1L - $ht2DP2L];
 pen black $thinLine solid;
 rectangle [expr 2 * $wd2DP2L] [expr 2 * $ht2DP2L];
 moverel $DP2LoffsX $DP2LoffsY;
@@ -75,9 +77,7 @@ moverel [expr 2 * ($DP2LoffsX - $wd2DP2L)] 0;
 circle $DP2LholeRad;
 
 # Display 2
-#moveto [expr $wd2DP1L - 2 * $wd2DP2L ] [expr $ht2DP1L - $ht2DP2 ];
-#set DP2pos [here];
-set DP2pos "[expr $wd2DP1L - 2 * $wd2DP2L ] [expr $ht2DP1L - $ht2DP2 ]";
+set DP2pos "[expr $wd2DP1L - 2 * $wd2DP2L  + $DP2posOffs] [expr $ht2DP1L - $ht2DP2]";
 moveto $DP2pos
 
 pen lightgray;
