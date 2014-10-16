@@ -5,16 +5,16 @@ set wd2 80; # half width
 set ht2 50; # half height
 
 ### set f 1.925 # 231 / 120
-set wd2DP1L  60;     # half width of board of Display 1
-set ht2DP1L  25.5;   # half height of board of Display 1
+set wd2DP1L  60;     # half width of board of Display 1  # 4.72" = 119.9mm ~= 120mm
+set ht2DP1L  25.4;   # half height of board of Display 1 # 1" = 25.4mm
 set wd2DP1   60;     # half width of Display 1
 set ht2DP1   20.4;   # half height of Display 1
 
 ### set f 3.8446 # 193 / 50.2
-set wd2DP2L  25.1;   # half width of board of Display 2
-set ht2DP2L  13.395; # half height of board of Display 2
-set wd2DP2   25.1;   # half width of Display 2
-set ht2DP2   9.5;    # half height of Display 2
+set wd2DP2L  25;   # half width of board of Display 2  # 1.97" = 50.038mm
+set ht2DP2L  14.1; # half height of board of Display 2 # 1.11" = 28.194mm
+set wd2DP2   25;   # half width of Display 2
+set ht2DP2   9.5;  # half height of Display 2
 
 set indRad   2.5;
 set DP1Rad   1.5;
@@ -23,13 +23,13 @@ set DP1Lwd   0.15;
 set DP2Lwd   0.1;
 set dimDist  7.5;
 
-set DP1LholeRad 1.1;
-set DP1LoffsX 3.5;
-set DP1LoffsY 2.6;
+set DP1LholeRad 1;   # ø0.07874" = ø2mm
+set DP1LoffsX 3.6;   # (120mm - 112.78mm) / 2 = 3.6mm
+set DP1LoffsY 2.54;  # (50.8mm - 45.72mm) / 2 = 2.54mm
 
-set DP2LholeRad 1.014;
-set DP2LoffsX 3.17;
-set DP2LoffsY 2.03;
+set DP2LholeRad 1;   # ø0.07874" = ø2mm
+set DP2LoffsX 3.156; # (50mm - 43.688mm) / 2 = 3.156mm
+set DP2LoffsY 2.667; # (28.194mm - 22.86mm) / 2 = 2.667mm
 
 set thickLine 0.5;
 set thinLine 0.15;
