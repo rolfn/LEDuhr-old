@@ -33,7 +33,7 @@
 - Zusätzliche längere Ferrit-Antenne ([Arduino Projects4u](http://www.arduino-projects4u.com/product/100mm-lenth-ferrite-rod-antenna-775/))
 - Zweitast-Codierschalter ([PICO-D 131](http://www.hartmann-codier.de/familie_19.html?id=222))
 - Gelbe Filterfolie oder farbiges Plexiglas (???)
-- "Real Time Clock" (DS3231, DS1307, ???)
+- "Real Time Clock" (DS3231)
 
 ## Software-Komponenten
 
@@ -42,6 +42,7 @@
 - I2C-LCD-C-Bibliothek ([»I2CLCD Library für HD44780 LCDs«](http://www.mikrocontroller.net/topic/334653))
 - I2C-LED-C-Routinen ([»Add a Seven-Segment LED Display to your AVR microcontroller«](http://w8bh.net/avr/AvrSSD1.pdf))
 - Debouncing-C-Bibliothek ([»Universelle Tastenabfrage«](http://www.mikrocontroller.net/topic/48465))
+- DS3231-C-Bibliothek ([»TWI/I2C Real-time clock library«](https://github.com/akafugu/ds_rtc_lib))
 
 ...Rolf
 
