@@ -55,7 +55,7 @@ TARGET = LEDuhr
 # List C source files here. (C dependencies are automatically generated.)
 SRC = $(TARGET).c RN-utils.c
 SRC += dcf77/clock.c dcf77/dcf77.c dcf77/timebase.c i2c/twimaster.c
-SRC += i2clcd/i2clcd.c i2cled/i2cled.c keyscan/keyscan.c
+SRC += i2clcd/i2clcd.c i2cled/i2cled.c keyscan/keyscan.c ds_rtc_lib/rtc.c
 
 # Hardware related defines
 # DCF77
@@ -125,7 +125,7 @@ CDEFS += -DF_CPU=$(F_CPU)UL
 
 
 # Place -I options here
-CINCS = -I$(HOME)/include/avr -Ii2c -Ii2clcd  -Ii2cled
+CINCS = -I$(HOME)/include/avr -Ii2c -Ii2clcd -Ii2cled -Ids_rtc_lib
 
 
 
