@@ -33,7 +33,7 @@
 - Zusätzliche längere Ferrit-Antenne ([Arduino Projects4u](http://www.arduino-projects4u.com/product/100mm-lenth-ferrite-rod-antenna-775/))
 - Zweitast-Codierschalter ([PICO-D 131](http://www.hartmann-codier.de/familie_19.html?id=222))
 - Gelbe Filterfolie oder farbiges Plexiglas (???)
-- "Real Time Clock" (DS3231)
+- "Real Time Clock" (DS3231) (auch Alarm-Funktion!)
 
 ## Software-Komponenten
 
