@@ -6,7 +6,9 @@
 /*
     For Adafruit 7-segment 1.2"/0.56" LED displays (HT16K33);
     see: https://learn.adafruit.com/adafruit-led-backpack/
-    Code based on http://w8bh.net/avr/AvrSSD1.pdf
+    Code based on http://w8bh.net/avr/AvrSSD1.pdf changed to work
+    with Peter Fleury's I2C Library
+      http://homepage.hispeed.ch/peterfleury/avr-software.html
     Rolf Niepraschk, Rolf.Niepraschk@gmx.de
 */
 

@@ -16,6 +16,7 @@
 /*
   Code based on https://github.com/akafugu/ds_rtc_lib
   Changed to work with Peter Fleury's I2C Library
+    http://homepage.hispeed.ch/peterfleury/avr-software.html
   Rolf Niepraschk, Rolf.Niepraschk@gmx.de
 */
 
