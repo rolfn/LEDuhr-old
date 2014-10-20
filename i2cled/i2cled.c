@@ -28,7 +28,7 @@ uint8_t I2C_ReadRegister(uint8_t busAddr, uint8_t deviceRegister) {
     i2c_start_wait(busAddr+I2C_WRITE);
     i2c_write(deviceRegister);
     i2c_start_wait(busAddr+I2C_READ);
-    data = i2c_readAck();
+    data = i2c_readNak();
     i2c_stop();
     return data;
 }
