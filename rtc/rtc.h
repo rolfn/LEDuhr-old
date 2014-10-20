@@ -1,7 +1,3 @@
-/*
-      Code based on https://github.com/akafugu/ds_rtc_lib
-      Rolf Niepraschk, Rolf.Niepraschk@gmx.de
-*/
 
  /*
  * DS RTC Library: DS1307 and DS3231 driver library
@@ -18,15 +14,20 @@
  *
  */
 
-#ifndef DS1307_H
-#define DS1307_H
+/*
+  Code based on https://github.com/akafugu/ds_rtc_lib
+  Changed to work with Peter Fleury's I2C Library
+  Rolf Niepraschk, Rolf.Niepraschk@gmx.de
+*/
+
+#ifndef RTC_H
+#define RTC_H
 
 #include <stdbool.h>
 #include <avr/io.h>
-// #include "twi.h"
 #include "i2c/i2cmaster.h"
 
-#define DS1307_SLAVE_ADDR 0b11010000
+// #define DS1307_SLAVE_ADDR 0b11010000   // ???
 
 /** Time structure
  *

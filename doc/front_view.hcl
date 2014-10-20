@@ -92,13 +92,6 @@ moveto [expr 10 -$wd2DP1L] $ht2DP1L;
 pen orange; fillcircle $indRad;
 pen black $thinLine solid; circle $indRad;
 
-pen black midLine solid;
-moveto [expr $wd2 + $dimDist] [expr -$ht2];
-dimlinerel 0 [expr 2 * $ht2];
-moveto [expr -$wd2] [expr $ht2 + $dimDist];
-dimlinerel [expr 2 * $wd2] 0;
-
-pen black $thickLine solid;
 
 proc drawSmall7Seg {pos} {
   proc drawSeg {x} {
@@ -231,18 +224,22 @@ drawSmall7Seg $DP2pos;
 pen black midLine solid;
 dimline -$wd2 [expr [Y $DP1pos] - 2 * $dimDist] [X $DP1pos] [expr [Y $DP1pos] - 2 * $dimDist];
 dimlinerel [expr 2 * $wd2DP1L] 0;
-dimline -$wd2 [Y $DP2pos] $DP2pos;  ###circle 5;
+dimline -$wd2 [Y $DP2pos] $DP2pos;  #circle 5;
 
 moverel [expr 2 * $wd2DP2 + $dimDist] 0;
 dimlinerel 0 [expr 2 * $ht2DP2];
-moverel $dimDist [expr -$ht2DP2 - $ht2DP2L];
-dimlinerel 0 [expr 2 * $ht2DP2L];
+#moverel $dimDist [expr -$ht2DP2 - $ht2DP2L];
+#dimlinerel 0 [expr 2 * $ht2DP2L];
 
 moveto $DP1pos;
 moverel [expr 2 * $wd2DP1 + $dimDist] 0;
 dimlinerel 0 [expr 2 * $ht2DP1];
-moverel $dimDist [expr -$ht2DP1 - $ht2DP1L];
-dimlinerel 0 [expr 2 * $ht2DP1L];
+#moverel $dimDist [expr -$ht2DP1 - $ht2DP1L];
+#dimlinerel 0 [expr 2 * $ht2DP1L];
 
-
-
+moveto $DP2pos;
+moverel 0 [expr $ht2DP2L + $ht2DP2 + $dimDist];
+dimlinerel [expr 2 * $wd2DP2] 0;
+moverel [expr -2 * $wd2DP2] 0;
+set tmp [here]
+dimlineto [expr -$wd2] [Y $tmp]

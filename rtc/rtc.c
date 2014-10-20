@@ -1,9 +1,4 @@
 /*
-      Code based on https://github.com/akafugu/ds_rtc_lib
-      Rolf Niepraschk, Rolf.Niepraschk@gmx.de
-*/
-
-/*
  * DS RTC Library: DS1307 and DS3231 driver library
  * (C) 2011 Akafugu Corporation
  *
@@ -17,6 +12,12 @@
  * PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  */
+
+/*
+  Code based on https://github.com/akafugu/ds_rtc_lib
+  Changed to work with Peter Fleury's I2C Library
+  Rolf Niepraschk, Rolf.Niepraschk@gmx.de
+*/
 
 /*
  * DS1307 register map
@@ -80,7 +81,7 @@
 
 #include "rtc.h"
 
-#define RTC_ADDR 0x68 // I2C address
+#define RTC_ADDR (0x68 << 1) // I2C address
 #define CH_BIT 7 // clock halt bit
 
 // statically allocated structure for time value
@@ -98,20 +99,31 @@ uint8_t bcd2dec(uint8_t b)
 
 uint8_t rtc_read_byte(uint8_t offset)
 {
-	twi_begin_transmission(RTC_ADDR);
-	twi_send_byte(offset);
-	twi_end_transmission();
+	//twi_begin_transmission(RTC_ADDR);
+	//twi_send_byte(offset);
+	//twi_end_transmission();
 
-	twi_request_from(RTC_ADDR, 1);
-	return twi_receive();
+	//twi_request_from(RTC_ADDR, 1);
+	//return twi_receive();
+  uint8_t data = 0;
+  i2c_start_wait(RTC_ADDR + I2C_WRITE);
+  i2c_write(offset);
+  i2c_start_wait(RTC_ADDR + I2C_READ);
+  data = i2c_readNak();
+  i2c_stop();
+  return data;
 }
 
 void rtc_write_byte(uint8_t b, uint8_t offset)
 {
-	twi_begin_transmission(RTC_ADDR);
-	twi_send_byte(offset);
-	twi_send_byte(b);
-	twi_end_transmission();
+	//twi_begin_transmission(RTC_ADDR);
+	//twi_send_byte(offset);
+	//twi_send_byte(b);
+	//twi_end_transmission();
+  i2c_start_wait(RTC_ADDR + I2C_WRITE);
+  i2c_write(offset);
+  i2c_write(b);
+  i2c_stop();
 }
 
 static bool s_is_ds1307 = false;
@@ -157,18 +169,29 @@ struct tm* rtc_get_time(void)
 
 	// read 7 bytes starting from register 0
 	// sec, min, hour, day-of-week, date, month, year
-	twi_begin_transmission(RTC_ADDR);
-	twi_send_byte(0x0);
-	twi_end_transmission();
 
-	twi_request_from(RTC_ADDR, 7);
 
-	for(uint8_t i=0; i<7; i++) {
-		rtc[i] = twi_receive();
-	}
+	//twi_begin_transmission(RTC_ADDR);
+	//twi_send_byte(0x0);
+	//twi_end_transmission();
+  i2c_start_wait(RTC_ADDR + I2C_WRITE);
+  i2c_write(0x0);
+  i2c_stop();
 
-	twi_end_transmission();
+	//twi_request_from(RTC_ADDR, 7);
+  //
+	//for(uint8_t i=0; i<7; i++) {
+	//	rtc[i] = twi_receive();
+	//}
+  //
+	//twi_end_transmission();
 
+  i2c_rep_start(RTC_ADDR + I2C_READ);
+  for(uint8_t i=0; i<6; i++) {
+    rtc[i] = i2c_readAck();
+  }
+  rtc[7] = i2c_readNak();
+  i2c_stop();
 	// Clear clock halt bit from read data
 	// This starts the clock for a DS1307, and has no effect for a DS3231
 	rtc[0] &= ~(_BV(CH_BIT)); // clear bit
@@ -203,17 +226,28 @@ void rtc_get_time_s(uint8_t* hour, uint8_t* min, uint8_t* sec)
 
 	// read 7 bytes starting from register 0
 	// sec, min, hour, day-of-week, date, month, year
-	twi_begin_transmission(RTC_ADDR);
-	twi_send_byte(0x0);
-	twi_end_transmission();
+	//twi_begin_transmission(RTC_ADDR);
+	//twi_send_byte(0x0);
+	//twi_end_transmission();
+  //
+	//twi_request_from(RTC_ADDR, 7);
+  //
+	//for(uint8_t i=0; i<7; i++) {
+	//	rtc[i] = twi_receive();
+	//}
+  //
+	//twi_end_transmission();
 
-	twi_request_from(RTC_ADDR, 7);
+  i2c_start_wait(RTC_ADDR + I2C_WRITE);
+  i2c_write(0x0);
+  i2c_stop();
 
-	for(uint8_t i=0; i<7; i++) {
-		rtc[i] = twi_receive();
-	}
-
-	twi_end_transmission();
+  i2c_rep_start(RTC_ADDR + I2C_READ);
+  for(uint8_t i=0; i<6; i++) { // 0..2 ???
+    rtc[i] = i2c_readAck();
+  }
+  rtc[7] = i2c_readNak();
+  i2c_stop();
 
 	if (sec)  *sec =  bcd2dec(rtc[0]);
 	if (min)  *min =  bcd2dec(rtc[1]);
@@ -223,32 +257,56 @@ void rtc_get_time_s(uint8_t* hour, uint8_t* min, uint8_t* sec)
 // fixme: support 12-hour mode for setting time
 void rtc_set_time(struct tm* tm_)
 {
-	twi_begin_transmission(RTC_ADDR);
-	twi_send_byte(0x0);
+	//twi_begin_transmission(RTC_ADDR);
+	//twi_send_byte(0x0);
 
 	// clock halt bit is 7th bit of seconds: this is always cleared to start the clock
-	twi_send_byte(dec2bcd(tm_->sec)); // seconds
-	twi_send_byte(dec2bcd(tm_->min)); // minutes
-	twi_send_byte(dec2bcd(tm_->hour)); // hours
-	twi_send_byte(dec2bcd(tm_->wday)); // day of week
-	twi_send_byte(dec2bcd(tm_->mday)); // day
-	twi_send_byte(dec2bcd(tm_->mon)); // month
-	twi_send_byte(dec2bcd(tm_->year)); // year
+	//twi_send_byte(dec2bcd(tm_->sec)); // seconds
+	//twi_send_byte(dec2bcd(tm_->min)); // minutes
+	//twi_send_byte(dec2bcd(tm_->hour)); // hours
+	//twi_send_byte(dec2bcd(tm_->wday)); // day of week
+	//twi_send_byte(dec2bcd(tm_->mday)); // day
+	//twi_send_byte(dec2bcd(tm_->mon)); // month
+	//twi_send_byte(dec2bcd(tm_->year)); // year
 
-	twi_end_transmission();
+	//twi_end_transmission();
+
+  i2c_start_wait(RTC_ADDR + I2C_WRITE);
+  i2c_write(0x0);
+
+  // clock halt bit is 7th bit of seconds: this is always cleared to start the clock
+  i2c_write(dec2bcd(tm_->sec)); // seconds
+  i2c_write(dec2bcd(tm_->min)); // minutes
+  i2c_write(dec2bcd(tm_->hour)); // hours
+  i2c_write(dec2bcd(tm_->wday)); // day of week
+  i2c_write(dec2bcd(tm_->mday)); // day
+  i2c_write(dec2bcd(tm_->mon)); // month
+  i2c_write(dec2bcd(tm_->year)); // year
+
+  i2c_stop();
 }
 
 void rtc_set_time_s(uint8_t hour, uint8_t min, uint8_t sec)
 {
-	twi_begin_transmission(RTC_ADDR);
-	twi_send_byte(0x0);
-
+	//twi_begin_transmission(RTC_ADDR);
+	//twi_send_byte(0x0);
+  //
 	// clock halt bit is 7th bit of seconds: this is always cleared to start the clock
-	twi_send_byte(dec2bcd(sec)); // seconds
-	twi_send_byte(dec2bcd(min)); // minutes
-	twi_send_byte(dec2bcd(hour)); // hours
+	//twi_send_byte(dec2bcd(sec)); // seconds
+	//twi_send_byte(dec2bcd(min)); // minutes
+	//twi_send_byte(dec2bcd(hour)); // hours
+  //
+	//twi_end_transmission();
+  i2c_start_wait(RTC_ADDR + I2C_WRITE);
+  i2c_write(0x0);
 
-	twi_end_transmission();
+  // clock halt bit is 7th bit of seconds: this is always cleared to start the clock
+  i2c_write(dec2bcd(sec)); // seconds
+  i2c_write(dec2bcd(min)); // minutes
+  i2c_write(dec2bcd(hour)); // hours
+
+  i2c_stop();
+
 }
 
 // DS1307 only (has no effect when run on DS3231)
@@ -292,25 +350,40 @@ void ds3231_get_temp_int(int8_t* i, uint8_t* f)
 
 	if (s_is_ds1307) return; // only valid on DS3231
 
-	twi_begin_transmission(RTC_ADDR);
+	//twi_begin_transmission(RTC_ADDR);
 	// temp registers 0x11 and 0x12
-	twi_send_byte(0x11);
-	twi_end_transmission();
+	//twi_send_byte(0x11);
+	//twi_end_transmission();
+  //
+	//twi_request_from(RTC_ADDR, 2);
 
-	twi_request_from(RTC_ADDR, 2);
+  i2c_start_wait(RTC_ADDR + I2C_WRITE);
+  // temp registers 0x11 and 0x12
+  i2c_write(0x11);
+  i2c_stop();
+  i2c_rep_start(RTC_ADDR + I2C_READ);
+  msb = i2c_readAck(); // integer part (in twos complement)
+  lsb = i2c_readNak(); // fraction part
+  i2c_stop();
+  // integer part in entire byte
+  *i = msb;
+  // fractional part in top two bits (increments of 0.25)
+  *f = (lsb >> 6) * 25;
+  // float value can be read like so:
+  // float temp = ((((short)msb << 8) | (short)lsb) >> 6) / 4.0f;
 
-	if (twi_available()) {
-		msb = twi_receive(); // integer part (in twos complement)
-		lsb = twi_receive(); // fraction part
-
-		// integer part in entire byte
-		*i = msb;
-		// fractional part in top two bits (increments of 0.25)
-		*f = (lsb >> 6) * 25;
-
-		// float value can be read like so:
-		// float temp = ((((short)msb << 8) | (short)lsb) >> 6) / 4.0f;
-	}
+	//if (twi_available()) {
+	//	msb = twi_receive(); // integer part (in twos complement)
+	//	lsb = twi_receive(); // fraction part
+  //
+	//	// integer part in entire byte
+	//	*i = msb;
+	//	// fractional part in top two bits (increments of 0.25)
+	//	*f = (lsb >> 6) * 25;
+  //
+	//	// float value can be read like so:
+	//	// float temp = ((((short)msb << 8) | (short)lsb) >> 6) / 4.0f;
+	//}
 }
 
 void rtc_force_temp_conversion(uint8_t block)
@@ -318,31 +391,57 @@ void rtc_force_temp_conversion(uint8_t block)
 	if (s_is_ds1307) return; // only valid on DS3231
 
 	// read control register (0x0E)
-	twi_begin_transmission(RTC_ADDR);
-	twi_send_byte(0x0E);
-	twi_end_transmission();
+	//twi_begin_transmission(RTC_ADDR);
+	//twi_send_byte(0x0E);
+	//twi_end_transmission();
 
-	twi_request_from(RTC_ADDR, 1);
-	uint8_t ctrl = twi_receive();
+  i2c_start_wait(RTC_ADDR + I2C_WRITE);
+  // read control register (0x0E)
+  i2c_write(0x0E);
+  i2c_stop();
+
+	//twi_request_from(RTC_ADDR, 1);
+	//uint8_t ctrl = twi_receive();
+
+  i2c_start_wait(RTC_ADDR + I2C_READ);
+  uint8_t ctrl = i2c_readNak();
+  i2c_stop();
 
 	ctrl |= 0b00100000; // Set CONV bit
 
 	// write new control register value
-	twi_begin_transmission(RTC_ADDR);
-	twi_send_byte(0x0E);
-	twi_send_byte(ctrl);
-	twi_end_transmission();
+	//twi_begin_transmission(RTC_ADDR);
+	//twi_send_byte(0x0E);
+	//twi_send_byte(ctrl);
+	//twi_end_transmission();
+
+  // write new control register value
+  i2c_start_wait(RTC_ADDR + I2C_WRITE);
+  i2c_write(0x0E);
+  i2c_write(ctrl);
+  i2c_stop();
 
 	if (!block) return;
 
-	// Temp conversion is ready when control register becomes 0
-	do {
-		// Block until CONV is 0
-		twi_begin_transmission(RTC_ADDR);
-		twi_send_byte(0x0E);
-		twi_end_transmission();
-		twi_request_from(RTC_ADDR, 1);
-	} while ((twi_receive() & 0b00100000) != 0);
+	//// Temp conversion is ready when control register becomes 0
+	//do {
+	//	// Block until CONV is 0
+	//	twi_begin_transmission(RTC_ADDR);
+	//	twi_send_byte(0x0E);
+	//	twi_end_transmission();
+	//	twi_request_from(RTC_ADDR, 1);
+	//} while ((twi_receive() & 0b00100000) != 0);
+
+  // Temp conversion is ready when control register becomes 0
+  do {
+    // Block until CONV is 0
+    i2c_start_wait(RTC_ADDR + I2C_WRITE);
+    i2c_write(0x0E);
+    i2c_stop();
+    i2c_start_wait(RTC_ADDR + I2C_READ);
+    ctrl = i2c_readNak();
+    i2c_stop();
+  } while ((ctrl & 0b00100000) != 0);
 }
 
 
@@ -367,32 +466,53 @@ void rtc_set_sram(uint8_t *data)
 
 uint8_t rtc_get_sram_byte(uint8_t offset)
 {
-	twi_begin_transmission(RTC_ADDR);
-	twi_send_byte(DS1307_SRAM_ADDR + offset);
-	twi_end_transmission();
+	//twi_begin_transmission(RTC_ADDR);
+	//twi_send_byte(DS1307_SRAM_ADDR + offset);
+	//twi_end_transmission();
+  i2c_start_wait(RTC_ADDR + I2C_WRITE);
+  i2c_write(DS1307_SRAM_ADDR + offset);
+  i2c_stop();
 
-	twi_request_from(RTC_ADDR, 1);
-	return twi_receive();
+	//twi_request_from(RTC_ADDR, 1);
+	//return twi_receive();
+
+  i2c_start_wait(RTC_ADDR + I2C_READ);
+  uint8_t ret = i2c_readNak();
+  i2c_stop();
+  return ret;
 }
 
 void rtc_set_sram_byte(uint8_t b, uint8_t offset)
 {
-	twi_begin_transmission(RTC_ADDR);
-	twi_send_byte(DS1307_SRAM_ADDR + offset);
-	twi_send_byte(b);
-	twi_end_transmission();
+	//twi_begin_transmission(RTC_ADDR);
+	//twi_send_byte(DS1307_SRAM_ADDR + offset);
+	//twi_send_byte(b);
+	//twi_end_transmission();
+
+  i2c_start_wait(RTC_ADDR + I2C_WRITE);
+  i2c_write(DS1307_SRAM_ADDR + offset);
+  i2c_write(b);
+  i2c_stop();
 }
 
 void rtc_SQW_enable(bool enable)
 {
 	if (s_is_ds1307) {
-		twi_begin_transmission(RTC_ADDR);
-		twi_send_byte(0x07);
-		twi_end_transmission();
+		//twi_begin_transmission(RTC_ADDR);
+		//twi_send_byte(0x07);
+		//twi_end_transmission();
+    i2c_start_wait(RTC_ADDR + I2C_WRITE);
+    i2c_write(0x07);
+    i2c_stop();
 
 		// read control
-   		twi_request_from(RTC_ADDR, 1);
-		uint8_t control = twi_receive();
+   	//	twi_request_from(RTC_ADDR, 1);
+		//uint8_t control = twi_receive();
+
+    // read control
+    i2c_start_wait(RTC_ADDR + I2C_READ);
+    uint8_t control = i2c_readNak();
+    i2c_stop();
 
 		if (enable)
 			control |=  0b00010000; // set SQWE to 1
@@ -400,20 +520,34 @@ void rtc_SQW_enable(bool enable)
 			control &= ~0b00010000; // set SQWE to 0
 
 		// write control back
-		twi_begin_transmission(RTC_ADDR);
-		twi_send_byte(0x07);
-		twi_send_byte(control);
-		twi_end_transmission();
+		//twi_begin_transmission(RTC_ADDR);
+		//twi_send_byte(0x07);
+		//twi_send_byte(control);
+		//twi_end_transmission();
 
+    // write control back
+    i2c_start_wait(RTC_ADDR + I2C_WRITE);
+    i2c_write(0x07);
+    i2c_write(control);
+    i2c_stop();
 	}
 	else { // DS3231
-		twi_begin_transmission(RTC_ADDR);
-		twi_send_byte(0x0E);
-		twi_end_transmission();
+		//twi_begin_transmission(RTC_ADDR);
+		//twi_send_byte(0x0E);
+		//twi_end_transmission();
 
-		// read control
-   		twi_request_from(RTC_ADDR, 1);
-		uint8_t control = twi_receive();
+    i2c_start_wait(RTC_ADDR + I2C_WRITE);
+    i2c_write(0x0E);
+    i2c_stop();
+
+		//// read control
+   	//	twi_request_from(RTC_ADDR, 1);
+		//uint8_t control = twi_receive();
+
+    // read control
+    i2c_start_wait(RTC_ADDR + I2C_READ);
+    uint8_t control = i2c_readNak();
+    i2c_stop();
 
 		if (enable) {
 			control |=  0b01000000; // set BBSQW to 1
@@ -424,51 +558,87 @@ void rtc_SQW_enable(bool enable)
 		}
 
 		// write control back
-		twi_begin_transmission(RTC_ADDR);
-		twi_send_byte(0x0E);
-		twi_send_byte(control);
-		twi_end_transmission();
+		//twi_begin_transmission(RTC_ADDR);
+		//twi_send_byte(0x0E);
+		//twi_send_byte(control);
+		//twi_end_transmission();
+
+    // write control back
+    i2c_start_wait(RTC_ADDR + I2C_WRITE);
+    i2c_write(0x0E);
+    i2c_write(control);
+    i2c_stop();
 	}
 }
 
 void rtc_SQW_set_freq(enum RTC_SQW_FREQ freq)
 {
 	if (s_is_ds1307) {
-		twi_begin_transmission(RTC_ADDR);
-		twi_send_byte(0x07);
-		twi_end_transmission();
+		//twi_begin_transmission(RTC_ADDR);
+		//twi_send_byte(0x07);
+		//twi_end_transmission();
 
-		// read control (uses bits 0 and 1)
-   		twi_request_from(RTC_ADDR, 1);
-		uint8_t control = twi_receive();
+    i2c_start_wait(RTC_ADDR + I2C_WRITE);
+    i2c_write(0x07);
+    i2c_stop();
+
+		//// read control (uses bits 0 and 1)
+   	//	twi_request_from(RTC_ADDR, 1);
+		//uint8_t control = twi_receive();
+
+    // read control (uses bits 0 and 1)
+    i2c_start_wait(RTC_ADDR + I2C_READ);
+    uint8_t control = i2c_readNak();
+    i2c_stop();
 
 		control &= ~0b00000011; // Set to 0
 		control |= freq; // Set freq bitmask
 
-		// write control back
-		twi_begin_transmission(RTC_ADDR);
-		twi_send_byte(0x07);
-		twi_send_byte(control);
-		twi_end_transmission();
+		//// write control back
+		//twi_begin_transmission(RTC_ADDR);
+		//twi_send_byte(0x07);
+		//twi_send_byte(control);
+		//twi_end_transmission();
+
+    // write control back
+    i2c_start_wait(RTC_ADDR + I2C_WRITE);
+    i2c_write(0x07);
+    i2c_write(control);
+    i2c_stop();
 
 	}
 	else { // DS3231
-		twi_begin_transmission(RTC_ADDR);
-		twi_send_byte(0x0E);
-		twi_end_transmission();
+		//twi_begin_transmission(RTC_ADDR);
+		//twi_send_byte(0x0E);
+		//twi_end_transmission();
 
-		// read control (uses bits 3 and 4)
-   		twi_request_from(RTC_ADDR, 1);
-		uint8_t control = twi_receive();
+    i2c_start_wait(RTC_ADDR + I2C_WRITE);
+    i2c_write(0x0E);
+    i2c_stop();
+
+		//// read control (uses bits 3 and 4)
+   	//	twi_request_from(RTC_ADDR, 1);
+		//uint8_t control = twi_receive();
+
+    // read control (uses bits 3 and 4)
+    i2c_start_wait(RTC_ADDR + I2C_READ);
+    uint8_t control = i2c_readNak();
+    i2c_stop();
 
 		control &= ~0b00011000; // Set to 0
 		control |= (freq << 4); // Set freq bitmask
 
-		// write control back
-		twi_begin_transmission(RTC_ADDR);
-		twi_send_byte(0x0E);
-		twi_send_byte(control);
-		twi_end_transmission();
+		//// write control back
+		//twi_begin_transmission(RTC_ADDR);
+		//twi_send_byte(0x0E);
+		//twi_send_byte(control);
+		//twi_end_transmission();
+
+    // write control back
+    i2c_start_wait(RTC_ADDR + I2C_WRITE);
+    i2c_write(0x0E);
+    i2c_write(control);
+    i2c_stop();
 	}
 }
 
@@ -476,13 +646,22 @@ void rtc_osc32kHz_enable(bool enable)
 {
 	if (!s_is_ds3231) return;
 
-	twi_begin_transmission(RTC_ADDR);
-	twi_send_byte(0x0F);
-	twi_end_transmission();
+	//twi_begin_transmission(RTC_ADDR);
+	//twi_send_byte(0x0F);
+	//twi_end_transmission();
 
-	// read status
-	twi_request_from(RTC_ADDR, 1);
-	uint8_t status = twi_receive();
+  i2c_start_wait(RTC_ADDR + I2C_WRITE);
+  i2c_write(0x0F);
+  i2c_stop();
+
+	//// read status
+	//twi_request_from(RTC_ADDR, 1);
+	//uint8_t status = twi_receive();
+
+  // read status
+  i2c_start_wait(RTC_ADDR + I2C_READ);
+  uint8_t status = i2c_readNak();
+  i2c_stop();
 
 	if (enable)
 		status |= 0b00001000; // set to 1
@@ -490,10 +669,16 @@ void rtc_osc32kHz_enable(bool enable)
 		status &= ~0b00001000; // Set to 0
 
 	// write status back
-	twi_begin_transmission(RTC_ADDR);
-	twi_send_byte(0x0F);
-	twi_send_byte(status);
-	twi_end_transmission();
+	//twi_begin_transmission(RTC_ADDR);
+	//twi_send_byte(0x0F);
+	//twi_send_byte(status);
+	//twi_end_transmission();
+
+  // write status back
+  i2c_start_wait(RTC_ADDR + I2C_WRITE);
+  i2c_write(0x0F);
+  i2c_write(status);
+  i2c_stop();
 }
 
 // Alarm functionality
