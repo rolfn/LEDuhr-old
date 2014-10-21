@@ -248,7 +248,7 @@ void rtc_get_time_s(uint8_t* hour, uint8_t* min, uint8_t* sec)
   for(uint8_t i=0; i<6; i++) {
     rtc[i] = i2c_readAck();
   }
-  rtc[7] = i2c_readNak();
+  rtc[6] = i2c_readNak();
   i2c_stop();
 
 	if (sec)  *sec =  bcd2dec(rtc[0]);
