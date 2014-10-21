@@ -17,7 +17,7 @@
   Code based on https://github.com/akafugu/ds_rtc_lib
   Changed to work with Peter Fleury's I2C Library
     http://homepage.hispeed.ch/peterfleury/avr-software.html
-  Rolf Niepraschk, Rolf.Niepraschk@gmx.de
+  Rolf Niepraschk, Rolf.Niepraschk@gmx.de, 2014
 */
 
 /*
@@ -106,11 +106,12 @@ uint8_t rtc_read_byte(uint8_t offset)
 
 	//twi_request_from(RTC_ADDR, 1);
 	//return twi_receive();
-  uint8_t data = 0;
+
   i2c_start_wait(RTC_ADDR + I2C_WRITE);
   i2c_write(offset);
+  i2c_stop();
   i2c_start_wait(RTC_ADDR + I2C_READ);
-  data = i2c_readNak();
+  uint8_t data = i2c_readNak();
   i2c_stop();
   return data;
 }
@@ -191,7 +192,7 @@ struct tm* rtc_get_time(void)
   for(uint8_t i=0; i<6; i++) {
     rtc[i] = i2c_readAck();
   }
-  rtc[7] = i2c_readNak();
+  rtc[6] = i2c_readNak();
   i2c_stop();
 	// Clear clock halt bit from read data
 	// This starts the clock for a DS1307, and has no effect for a DS3231
@@ -244,7 +245,7 @@ void rtc_get_time_s(uint8_t* hour, uint8_t* min, uint8_t* sec)
   i2c_stop();
 
   i2c_rep_start(RTC_ADDR + I2C_READ);
-  for(uint8_t i=0; i<6; i++) { // 0..2 ???
+  for(uint8_t i=0; i<6; i++) {
     rtc[i] = i2c_readAck();
   }
   rtc[7] = i2c_readNak();

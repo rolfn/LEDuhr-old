@@ -18,7 +18,7 @@
   Code based on https://github.com/akafugu/ds_rtc_lib
   Changed to work with Peter Fleury's I2C Library
     http://homepage.hispeed.ch/peterfleury/avr-software.html
-  Rolf Niepraschk, Rolf.Niepraschk@gmx.de
+  Rolf Niepraschk, Rolf.Niepraschk@gmx.de, 2014
 */
 
 #ifndef RTC_H
@@ -28,7 +28,7 @@
 #include <avr/io.h>
 #include "i2c/i2cmaster.h"
 
-// #define DS1307_SLAVE_ADDR 0b11010000   // ???
+// #define DS1307_SLAVE_ADDR 0b11010000
 
 /** Time structure
  *
