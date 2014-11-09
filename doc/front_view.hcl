@@ -1,19 +1,17 @@
 unitlength 1.5;           # Maßstab 1.5:1
 font Sans_Serif 3;
 
-set wd2 80; # half width
-set ht2 50; # half height
+set wd2 80; # half width of the plate
+set ht2 50; # half height of the plate
 
-### set f 1.925 # 231 / 120
-set wd2DP1L  60;     # half width of board of Display 1  # 4.72" = 119.9mm ~= 120mm
-set ht2DP1L  25.4;   # half height of board of Display 1 # 1" = 25.4mm
+set wd2DP1L  60;     # half width of display board 1  # 4.72" = 119.9mm ~= 120mm
+set ht2DP1L  25.4;   # half height of display board 1 # 1" = 25.4mm
 set wd2DP1   60;     # half width of Display 1
 set ht2DP1   20.4;   # half height of Display 1
 set DP1posOffs -4;
 
-### set f 3.8446 # 193 / 50.2
-set wd2DP2L  25;   # half width of board of Display 2  # 1.97" = 50.038mm
-set ht2DP2L  14.1; # half height of board of Display 2 # 1.11" = 28.194mm
+set wd2DP2L  25;   # half width of display board 2  # 1.97" = 50.038mm
+set ht2DP2L  14.1; # half of display board 2 # 1.11" = 28.194mm
 set wd2DP2   25;   # half width of Display 2
 set ht2DP2   9.5;  # half height of Display 2
 set DP2posOffs -10;
@@ -24,134 +22,56 @@ set DP2Rad   0.67;
 set DP1Lwd   0.15;
 set DP2Lwd   0.1;
 
-set dimDist  5;
+set dimDist  3.5;
 
 set DP1LholeRad 1;   # ø0.07874" = ø2mm
-set DP1LoffsX 3.6;   # (120mm - 112.78mm) / 2 = 3.6mm
-set DP1LoffsY 2.54;  # (50.8mm - 45.72mm) / 2 = 2.54mm
+set DP1LholeDistX 112.6;
+set DP1LoffsX [expr (2 * $wd2DP1L - $DP1LholeDistX) / 2];
+set DP1LholeDistY 45.7;
+set DP1LoffsY [expr (2 * $ht2DP1L - $DP1LholeDistY) / 2];
 
 set DP2LholeRad 1;   # ø0.07874" = ø2mm
-set DP2LoffsX 3.156; # (50mm - 43.688mm) / 2 = 3.156mm
-set DP2LoffsY 2.667; # (28.194mm - 22.86mm) / 2 = 2.667mm
+set DP2LholeDistX 43.7;
+set DP2LoffsX [expr (2 * $wd2DP2L - $DP2LholeDistX) / 2];
+set DP2LholeDistY 22.9;
+set DP2LoffsY [expr (2 * $ht2DP2L - $DP2LholeDistY) / 2];
 
-set thickLine 0.5;
-set midLine 0.35;
-set thinLine 0.2;
+set thickLine 0.65;
+set midLine 0.25;
+set thinLine 0.125;
 
-# wohle front plate
-moveto 0 0;
-moverel -$wd2  -$ht2;
-pen black $thickLine solid;
-rectangle [expr 2 * $wd2] [expr 2 * $ht2];
+# upper left position
+set UL "-$wd2  -$ht2";
+set board1UL "[expr $DP1posOffs - $wd2DP1] [expr -$ht2DP1L - $ht2DP2L]";
+# upper left position of display board 1
+set dp1UL "[X $board1UL] [expr [Y $board1UL] + $ht2DP1L - $ht2DP1]";
 
-# printed board Display 1
-moveto [expr $DP1posOffs - $wd2DP1L]  [expr -$ht2DP1L - $ht2DP2L ];
-pen black $thinLine solid;
-rectangle [expr 2 * $wd2DP1L] [expr 2 * $ht2DP1L];
-moverel $DP1LoffsX $DP1LoffsY;
-circle $DP1LholeRad;
-moverel [expr 2 * ($wd2DP1L - $DP1LoffsX)] 0;
-circle $DP1LholeRad;
-moverel 0 [expr 2 * ($ht2DP1L - $DP1LoffsY)];
-circle $DP1LholeRad;
-moverel [expr 2 * ($DP1LoffsX - $wd2DP1L)] 0;
-circle $DP1LholeRad;
+#########moveto [expr $DP1posOffs - $wd2DP1L] [expr -$ht2DP1L - $ht2DP2L + $ht2DP2 /2 ];
+set DP1pos $dp1UL;
 
-# Display 1
-moveto [expr $DP1posOffs - $wd2DP1L] [expr -$ht2DP1L - $ht2DP2L + $ht2DP2 /2 ];
-set DP1pos [here];
-pen lightgray;
-fillrectangle [expr 2 * $wd2DP1] [expr 2 * $ht2DP1];
-pen black $thinLine solid;
-rectangle [expr 2 * $wd2DP1] [expr 2 * $ht2DP1];
-
-# printed board  Display 2
-moveto [expr $wd2DP1L - 2 * $wd2DP2L + $DP2posOffs] [expr $ht2DP1L - $ht2DP2L];
-pen black $thinLine solid;
-rectangle [expr 2 * $wd2DP2L] [expr 2 * $ht2DP2L];
-moverel $DP2LoffsX $DP2LoffsY;
-circle $DP2LholeRad;
-moverel [expr 2 * ($wd2DP2L - $DP2LoffsX)] 0;
-circle $DP2LholeRad;
-moverel 0 [expr 2 * ($ht2DP2L - $DP2LoffsY)];
-circle $DP2LholeRad;
-moverel [expr 2 * ($DP2LoffsX - $wd2DP2L)] 0;
-circle $DP2LholeRad;
-
-# Display 2
-set DP2pos "[expr $wd2DP1L - 2 * $wd2DP2L  + $DP2posOffs] [expr $ht2DP1L - $ht2DP2]";
-moveto $DP2pos
-
-pen lightgray;
-fillrectangle [expr 2 * $wd2DP2] [expr 2 * $ht2DP2];
-pen black $thinLine solid;
-rectangle [expr 2 * $wd2DP2] [expr 2 * $ht2DP2];
+# upper left position of display 1
+set board2UL "0 [expr [Y $board1UL] + 2 * $ht2DP1L]";
+# upper left position of display board 2
+set dp2UL "[X $board2UL] [expr [Y $board2UL] + $ht2DP2L - $ht2DP2]";
+# upper left position of display 2
+set indicatorPos "[expr [X $board1UL] + 24] [expr [Y $board2UL] + $ht2DP2L]";
 
 # Indikator
-moveto [expr 10 -$wd2DP1L] $ht2DP1L;
+moveto $indicatorPos;
+set tmp "[expr [X $board1UL] + 2 * $wd2DP1L + 4 * $dimDist] [Y [here]]";
+pen lack dashdotted 0.2;
+lineto [expr [X $board2UL] - 3 * $dimDist] [Y [here]];
+lineto [expr [X [here]] + 2 * $dimDist] [Y [here]] [X $tmp] [Y [here]];
+
+moveto $indicatorPos;
 pen orange; fillcircle $indRad;
-pen black $thinLine solid; circle $indRad;
-
-
-proc drawSmall7Seg {pos} {
-  proc drawSeg {x} {
-    pen orange;
-    global DP2Lwd;
-    fillpolygon $x;
-    pen black $DP2Lwd solid;
-    polygon $x;
-  }
-  proc draw7Seg {xoffs} {
-    offset $xoffs 0;
-    # "A"
-    drawSeg {2.43 2.92 3.07 2.39 8.82 2.39 9.25 2.91 8.31 3.74 3.14 3.74};
-    # "B"
-    drawSeg {9.40 3.10 9.86 3.62 9.14 8.66 8.37 9.35 7.77 8.70 8.46 3.90};
-    # "C"
-    drawSeg {8.31 9.64 7.55 10.31 6.86 15.10 7.59 15.92 8.18 15.42 8.91 10.30};
-    # "D"
-    drawSeg {0.60 16.08 1.07 16.57 6.82 16.61 7.40 16.07 6.70 15.25 1.52 15.25};
-    # "E"
-    drawSeg {1.50 9.65 0.69 10.31 0.00 15.38 0.46 15.90 1.42 15.07 2.07 10.30};
-    # "F"
-    drawSeg {2.28 3.08 1.66 3.61 0.94 8.69 1.52 9.34 2.32 8.66 3.00 3.88};
-    # "G"
-    drawSeg {1.66 9.50 2.24 10.17 7.41 10.16 8.20 9.48 7.62 8.82 2.45 8.82};
-
-    offset [expr -$xoffs] 0; # reset offset;
-  }
-
-  global DP2Rad DP2Lwd;
-  pen black $DP2Lwd solid;
-
-  moveto $pos;   # upper left corner Display 2
-
-  moverel 25.63 5.63;  circle $DP2Rad;
-  moverel -1.15 7.92;  circle $DP2Rad;
-  moverel -14.06 2.52; circle $DP2Rad;
-  moverel 25.53 0; circle $DP2Rad;
-  moverel 12.7 0;
-  pen orange; fillcircle $DP2Rad;
-  pen black; circle $DP2Rad;
-  moverel -25.4 0;
-  pen orange; fillcircle $DP2Rad;
-  pen black; circle $DP2Rad;
-
-  moveto $pos;
-
-  offset $pos;
-  set x [X $pos];
-  set y [Y $pos];
-
-  set d {1.04 13.74 26.44 39.14}; # local offsets for each 7-Seg
-
-  foreach i $d {
-    draw7Seg $i;
-  }
-
-  offset [expr -1 * $x] [expr -1 * $y]; # reset global offset;
-
-}
+pen black $midLine solid; circle $indRad;
+moveto -$wd2 [expr [Y [here]] + $indRad + $dimDist];
+dimline [X $indicatorPos] [Y [here]];
+moveto [expr [X $indicatorPos] - $indRad - $dimDist] [expr [Y $indicatorPos] - $indRad];
+dimlinerel 0 [expr 2 * $indRad];
+moveto [X $tmp] -$ht2;
+dimline "[X [here]] [Y $tmp]";
 
 proc drawBig7Seg {pos} {
   proc drawSeg {x} {
@@ -214,32 +134,146 @@ proc drawBig7Seg {pos} {
 
 }
 
+proc drawSmall7Seg {pos} {
+  proc drawSeg {x} {
+    pen orange;
+    global DP2Lwd;
+    fillpolygon $x;
+    pen black $DP2Lwd solid;
+    polygon $x;
+  }
+  proc draw7Seg {xoffs} {
+    offset $xoffs 0;
+    # "A"
+    drawSeg {2.43 2.92 3.07 2.39 8.82 2.39 9.25 2.91 8.31 3.74 3.14 3.74};
+    # "B"
+    drawSeg {9.40 3.10 9.86 3.62 9.14 8.66 8.37 9.35 7.77 8.70 8.46 3.90};
+    # "C"
+    drawSeg {8.31 9.64 7.55 10.31 6.86 15.10 7.59 15.92 8.18 15.42 8.91 10.30};
+    # "D"
+    drawSeg {0.60 16.08 1.07 16.57 6.82 16.61 7.40 16.07 6.70 15.25 1.52 15.25};
+    # "E"
+    drawSeg {1.50 9.65 0.69 10.31 0.00 15.38 0.46 15.90 1.42 15.07 2.07 10.30};
+    # "F"
+    drawSeg {2.28 3.08 1.66 3.61 0.94 8.69 1.52 9.34 2.32 8.66 3.00 3.88};
+    # "G"
+    drawSeg {1.66 9.50 2.24 10.17 7.41 10.16 8.20 9.48 7.62 8.82 2.45 8.82};
 
-drawBig7Seg $DP1pos;
-drawSmall7Seg $DP2pos;
+    offset [expr -$xoffs] 0; # reset offset;
+  }
 
-###circle $DP1pos 1;
-###circle $DP2pos 1;
+  global DP2Rad DP2Lwd;
+  pen black $DP2Lwd solid;
 
-pen black midLine solid;
-dimline -$wd2 [expr [Y $DP1pos] - 2 * $dimDist] [X $DP1pos] [expr [Y $DP1pos] - 2 * $dimDist];
+  moveto $pos;   # upper left corner Display 2
+
+  moverel 25.63 5.63;  circle $DP2Rad;
+  moverel -1.15 7.92;  circle $DP2Rad;
+  moverel -14.06 2.52; circle $DP2Rad;
+  moverel 25.53 0; circle $DP2Rad;
+  moverel 12.7 0;
+  pen orange; fillcircle $DP2Rad;
+  pen black; circle $DP2Rad;
+  moverel -25.4 0;
+  pen orange; fillcircle $DP2Rad;
+  pen black; circle $DP2Rad;
+
+  moveto $pos;
+
+  offset $pos;
+  set x [X $pos];
+  set y [Y $pos];
+
+  set d {1.04 13.74 26.44 39.14}; # local offsets for each 7-Seg
+
+  foreach i $d {
+    draw7Seg $i;
+  }
+
+  offset [expr -1 * $x] [expr -1 * $y]; # reset global offset;
+
+}
+
+# whole front plate
+moveto $UL;
+pen black $thickLine solid;
+rectangle [expr 2 * $wd2] [expr 2 * $ht2];
+pen black $midLine solid;
+moverel 0 -$dimDist;
+dimlinerel [expr 2 * $wd2] 0;
+moverel $dimDist $dimDist;
+dimlinerel 0 [expr 2 * $ht2];
+
+# board Display 1
+moveto $board1UL;
+pen black $thickLine solid;
+rectangle [expr 2 * $wd2DP1L] [expr 2 * $ht2DP1L];
+pen black $midLine solid;
+moverel [expr -2 * $dimDist] 0;
+dimlinerel 0 [expr 2 * $ht2DP1L];
+moveto -$wd2 [expr [Y [here]] - 2 * $ht2DP1L - 2 * $dimDist];
+dimline "[X $board1UL] [Y [here]]";
 dimlinerel [expr 2 * $wd2DP1L] 0;
-dimline -$wd2 [Y $DP2pos] $DP2pos;  #circle 5;
+moveto -$wd2 [expr [Y $board1UL] - $dimDist];
+dimline "[expr [X $board1UL] + $DP1LoffsX] [Y [here]]";
+dimlinerel $DP1LholeDistX 0;
+moverel 0 [expr $dimDist + $DP1LoffsY]; circle $DP1LholeRad;
+moverel 0 $DP1LholeDistY; circle $DP1LholeRad;
+moverel -$DP1LholeDistX 0; circle $DP1LholeRad;
+moverel 0 -$DP1LholeDistY; circle $DP1LholeRad;
+moverel [expr -$DP1LoffsX -$dimDist] 0;
+dimlinerel 0 $DP1LholeDistY;
 
-moverel [expr 2 * $wd2DP2 + $dimDist] 0;
-dimlinerel 0 [expr 2 * $ht2DP2];
-#moverel $dimDist [expr -$ht2DP2 - $ht2DP2L];
-#dimlinerel 0 [expr 2 * $ht2DP2L];
+moveto [expr [X $board1UL] + 2 * $wd2DP1L + $dimDist] -$ht2;
+dimline "[X [here]] [expr [Y $board1UL] + $DP1LoffsY]";
 
-moveto $DP1pos;
-moverel [expr 2 * $wd2DP1 + $dimDist] 0;
+# Display 1
+moveto $dp1UL;
+pen lightgray;
+fillrectangle [expr 2 * $wd2DP1] [expr 2 * $ht2DP1];
+pen black $thickLine solid;
+rectangle     [expr 2 * $wd2DP1] [expr 2 * $ht2DP1];
+pen black $midLine solid;
+moveto [expr [X [here]] + 2 * $wd2DP1 + 3 * $dimDist] -$ht2;
+dimline "[X [here]] [Y $dp1UL]";
 dimlinerel 0 [expr 2 * $ht2DP1];
-#moverel $dimDist [expr -$ht2DP1 - $ht2DP1L];
-#dimlinerel 0 [expr 2 * $ht2DP1L];
+drawBig7Seg $dp1UL;
 
-moveto $DP2pos;
-moverel 0 [expr $ht2DP2L + $ht2DP2 + $dimDist];
-dimlinerel [expr 2 * $wd2DP2] 0;
-moverel [expr -2 * $wd2DP2] 0;
-set tmp [here]
-dimlineto [expr -$wd2] [Y $tmp]
+# board Display 2
+moveto $board2UL;
+pen black $thickLine solid;
+rectangle [expr 2 * $wd2DP2L] [expr 2 * $ht2DP2L];
+pen black $midLine solid;
+moverel [expr -2 * $dimDist] 0;
+dimlinerel 0 [expr 2 * $ht2DP2L];
+moveto -$wd2 [expr [Y [here]] + 2 * $dimDist];
+dimline "[X $board2UL] [Y [here]]";
+dimlinerel [expr 2 * $wd2DP2L] 0;
+moveto -$wd2 [expr [Y $board2UL] + 2 * $ht2DP2L + $dimDist];
+dimline "[expr [X $board2UL] + $DP2LoffsX] [Y [here]]";
+dimlinerel $DP2LholeDistX 0;
+moverel 0 [expr -$dimDist - $DP2LoffsY]; circle $DP2LholeRad;
+moverel 0 -$DP2LholeDistY; circle $DP2LholeRad;
+moverel -$DP2LholeDistX 0; circle $DP2LholeRad;
+moverel 0 $DP2LholeDistY; circle $DP2LholeRad;
+moverel [expr -$DP2LoffsX -$dimDist] 0;
+dimlinerel 0 -$DP2LholeDistY;
+
+moveto [expr [X $board1UL] + 2 * $wd2DP1L + 2 * $dimDist] -$ht2;
+dimline "[X [here]] [expr [Y $board2UL] + $DP2LoffsY]";
+
+# Display 2
+moveto $dp2UL;
+pen lightgray;
+fillrectangle [expr 2 * $wd2DP2] [expr 2 * $ht2DP2];
+pen black $thickLine solid;
+rectangle     [expr 2 * $wd2DP2] [expr 2 * $ht2DP2];
+pen black $midLine solid;
+moveto [expr [X $board1UL] + 2 * $wd2DP1L + 5 * $dimDist] -$ht2;
+dimline "[X [here]] [expr [Y $dp2UL] + 2 * $ht2DP2]";
+dimlinerel 0 [expr -2 * $ht2DP2];
+
+drawSmall7Seg $dp2UL;
+
+
+

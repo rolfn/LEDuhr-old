@@ -25,7 +25,7 @@
 #define RTC_H
 
 #include <stdbool.h>
-#include <avr/io.h>
+//#include <avr/io.h>
 #include "i2c/i2cmaster.h"
 
 // #define DS1307_SLAVE_ADDR 0b11010000
