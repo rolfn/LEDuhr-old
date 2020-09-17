@@ -14,4 +14,7 @@ extern void printDEC_L(uint8_t l, uint8_t c, uint16_t val);
 #define ClearBit(x,y) x &= ~_BV(y)      //   equivalent to   cbi(x,y)
 #define SetBit(x,y) x |= _BV(y)         //   equivalent to   sbi(x,y)
 
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+
 #endif // RN_UTILS_H
